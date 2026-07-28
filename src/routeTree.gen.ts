@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
+import { Route as PortalTokenRouteImport } from './routes/portal.$token'
 import { Route as AuthenticatedVendasRouteImport } from './routes/_authenticated/vendas'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedPdvRouteImport } from './routes/_authenticated/pdv'
@@ -47,6 +48,11 @@ const IndexRoute = IndexRouteImport.update({
 const PortalIndexRoute = PortalIndexRouteImport.update({
   id: '/portal/',
   path: '/portal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalTokenRoute = PortalTokenRouteImport.update({
+  id: '/portal/$token',
+  path: '/portal/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedVendasRoute = AuthenticatedVendasRouteImport.update({
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/pdv': typeof AuthenticatedPdvRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/vendas': typeof AuthenticatedVendasRoute
+  '/portal/$token': typeof PortalTokenRoute
   '/portal/': typeof PortalIndexRoute
 }
 export interface FileRoutesByTo {
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/pdv': typeof AuthenticatedPdvRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/vendas': typeof AuthenticatedVendasRoute
+  '/portal/$token': typeof PortalTokenRoute
   '/portal': typeof PortalIndexRoute
 }
 export interface FileRoutesById {
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/_authenticated/pdv': typeof AuthenticatedPdvRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/vendas': typeof AuthenticatedVendasRoute
+  '/portal/$token': typeof PortalTokenRoute
   '/portal/': typeof PortalIndexRoute
 }
 export interface FileRouteTypes {
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/pdv'
     | '/relatorios'
     | '/vendas'
+    | '/portal/$token'
     | '/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/pdv'
     | '/relatorios'
     | '/vendas'
+    | '/portal/$token'
     | '/portal'
   id:
     | '__root__'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pdv'
     | '/_authenticated/relatorios'
     | '/_authenticated/vendas'
+    | '/portal/$token'
     | '/portal/'
   fileRoutesById: FileRoutesById
 }
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  PortalTokenRoute: typeof PortalTokenRoute
   PortalIndexRoute: typeof PortalIndexRoute
 }
 
@@ -247,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: '/portal'
       fullPath: '/portal/'
       preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/$token': {
+      id: '/portal/$token'
+      path: '/portal/$token'
+      fullPath: '/portal/$token'
+      preLoaderRoute: typeof PortalTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/vendas': {
@@ -356,6 +376,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  PortalTokenRoute: PortalTokenRoute,
   PortalIndexRoute: PortalIndexRoute,
 }
 export const routeTree = rootRouteImport
