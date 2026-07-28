@@ -62,6 +62,7 @@ export const portalVerificarCodigo = createServerFn({ method: "POST" })
       .from("ordens_servico")
       .select("id, numero_os, status, portal_token, data_entrada, aparelhos(marca, modelo)")
       .eq("cliente_id", reg.cliente_id)
+      .eq("portal_ativo", true)
       .order("data_entrada", { ascending: false });
 
     return { ok: true as const, ordens: ordens ?? [] };
@@ -75,12 +76,14 @@ export const portalOrdem = createServerFn({ method: "POST" })
     const { data: os } = await db
       .from("ordens_servico")
       .select(
-        "id, numero_os, status, defeito, diagnostico, servico_realizado, valor_servico, valor_pecas, desconto, valor_total, data_entrada, previsao_entrega, data_entrega, fotos, orcamento_status, orcamento_resposta_em, clientes(nome), aparelhos(marca, modelo, imei, cor), profiles(nome)",
+        "id, numero_os, status, portal_ativo, defeito, diagnostico, servico_realizado, valor_servico, valor_pecas, desconto, valor_total, data_entrada, previsao_entrega, data_entrega, fotos, orcamento_status, orcamento_resposta_em, clientes(nome), aparelhos(marca, modelo, imei, cor), profiles(nome)",
       )
       .eq("portal_token", data.token)
       .maybeSingle();
 
     if (!os) return { ok: false as const, erro: "Ordem de serviço não encontrada." };
+    if (os.portal_ativo === false)
+      return { ok: false as const, erro: "Este link de acompanhamento foi desativado. Entre em contato com a JV Celulares." };
 
     const { data: updates } = await db
       .from("atualizacoes_os")
@@ -125,10 +128,11 @@ export const portalResponderOrcamento = createServerFn({ method: "POST" })
 
     const { data: os } = await db
       .from("ordens_servico")
-      .select("id, orcamento_status")
+      .select("id, orcamento_status, portal_ativo")
       .eq("portal_token", data.token)
       .maybeSingle();
-    if (!os) return { ok: false as const, erro: "Ordem de serviço não encontrada." };
+    if (!os || os.portal_ativo === false)
+      return { ok: false as const, erro: "Ordem de serviço não encontrada." };
     if (os.orcamento_status !== "Pendente")
       return { ok: false as const, erro: "Não há orçamento aguardando resposta." };
 
