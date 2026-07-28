@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search, Printer, MessageCircle, Pencil } from "lucide-react";
+import { Plus, Search, Printer, MessageCircle, Pencil, Activity } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState } from "@/components/ui-kit";
 import { Field } from "./clientes";
@@ -20,6 +20,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { brl, dateBR, onlyDigits } from "@/lib/format";
+import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoesDialog";
 
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
@@ -61,6 +62,7 @@ function OrdensPage() {
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [f, setF] = useState({ ...vazio });
+  const [portalOs, setPortalOs] = useState<OsPortal | null>(null);
 
   const { data: ordens = [] } = useQuery({
     queryKey: ["ordens"],
@@ -267,6 +269,14 @@ function OrdensPage() {
                           </a>
                         </Button>
                       )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Atualizações do portal"
+                        onClick={() => setPortalOs(o as unknown as OsPortal)}
+                      >
+                        <Activity className="size-4" />
+                      </Button>
                       <Button variant="ghost" size="icon" aria-label="Imprimir" onClick={() => imprimir(o)}>
                         <Printer className="size-4" />
                       </Button>
@@ -376,6 +386,8 @@ function OrdensPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />
     </div>
   );
 }
