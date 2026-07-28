@@ -39,8 +39,12 @@ function Landing() {
         </div>
         <span className="font-display text-sm font-semibold">CelTech ERP</span>
         <Button asChild variant="ghost" size="sm" className="ml-auto">
+          <Link to="/portal">Acompanhar meu reparo</Link>
+        </Button>
+        <Button asChild variant="ghost" size="sm">
           <Link to="/auth">Entrar</Link>
         </Button>
+
       </header>
 
       <main>
