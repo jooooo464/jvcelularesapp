@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/pdv")({
   component: PdvPage,
 });
 
-type Item = { id: string; nome: string; preco: number; qtd: number; estoque: number };
+type Item = { id: string; nome: string; preco: number; custo: number; qtd: number; estoque: number };
 
 const PAGAMENTOS = ["Dinheiro", "PIX", "Débito", "Crédito", "Crediário"];
 
@@ -39,8 +39,11 @@ function PdvPage() {
   const { data: produtos = [] } = useQuery({
     queryKey: ["produtos-pdv"],
     queryFn: async () =>
-      (await supabase.from("produtos").select("id,nome,preco_venda,estoque_atual,sku").gt("estoque_atual", 0).order("nome"))
-        .data ?? [],
+      (await supabase
+        .from("produtos")
+        .select("id,nome,valor_venda,valor_compra,quantidade,sku")
+        .gt("quantidade", 0)
+        .order("nome")).data ?? [],
   });
 
   const { data: clientes = [] } = useQuery({
@@ -59,7 +62,7 @@ function PdvPage() {
   const subtotal = carrinho.reduce((s, i) => s + i.preco * i.qtd, 0);
   const total = Math.max(subtotal - (Number(desconto) || 0), 0);
 
-  function addItem(p: { id: string; nome: string; preco_venda: number; estoque_atual: number }) {
+  function addItem(p: { id: string; nome: string; valor_venda: number; valor_compra: number; quantidade: number }) {
     setCarrinho((c) => {
       const ex = c.find((i) => i.id === p.id);
       if (ex) {
@@ -69,7 +72,10 @@ function PdvPage() {
         }
         return c.map((i) => (i.id === p.id ? { ...i, qtd: i.qtd + 1 } : i));
       }
-      return [...c, { id: p.id, nome: p.nome, preco: Number(p.preco_venda), qtd: 1, estoque: p.estoque_atual }];
+      return [
+        ...c,
+        { id: p.id, nome: p.nome, preco: Number(p.valor_venda), custo: Number(p.valor_compra), qtd: 1, estoque: p.quantidade },
+      ];
     });
   }
 
@@ -80,12 +86,11 @@ function PdvPage() {
         .from("vendas")
         .insert({
           cliente_id: clienteId || null,
-          subtotal,
           desconto: Number(desconto) || 0,
-          total,
+          valor_total: total,
           forma_pagamento: pagamento,
         })
-        .select("id,numero_venda")
+        .select("id")
         .single();
       if (error) throw error;
 
@@ -93,15 +98,15 @@ function PdvPage() {
         venda_id: venda.id,
         produto_id: i.id,
         quantidade: i.qtd,
-        preco_unitario: i.preco,
-        subtotal: i.preco * i.qtd,
+        valor_unitario: i.preco,
+        custo_unitario: i.custo,
       }));
       const { error: e2 } = await supabase.from("itens_venda").insert(itens);
       if (e2) throw e2;
       return venda;
     },
-    onSuccess: (venda) => {
-      toast.success(`Venda #${venda.numero_venda} concluída`, { description: brl(total) });
+    onSuccess: () => {
+      toast.success("Venda concluída", { description: brl(total) });
       setCarrinho([]);
       setDesconto("0");
       setClienteId("");
@@ -137,8 +142,8 @@ function PdvPage() {
               >
                 <p className="line-clamp-2 text-sm font-medium">{p.nome}</p>
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="numeric text-base font-semibold">{brl(Number(p.preco_venda))}</span>
-                  <Badge variant="secondary" className="numeric text-[11px]">{p.estoque_atual} un</Badge>
+                  <span className="numeric text-base font-semibold">{brl(Number(p.valor_venda))}</span>
+                  <Badge variant="secondary" className="numeric text-[11px]">{p.quantidade} un</Badge>
                 </div>
               </button>
             ))}
