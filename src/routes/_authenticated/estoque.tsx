@@ -17,9 +17,9 @@ import { brl } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/estoque")({
   head: () => ({
     meta: [
-      { title: "Estoque — CelTech ERP" },
+      { title: "Estoque — JV Celulares" },
       { name: "description", content: "Produtos, peças, custos, margens e alertas de estoque mínimo." },
-      { property: "og:title", content: "Estoque — CelTech ERP" },
+      { property: "og:title", content: "Estoque — JV Celulares" },
       { property: "og:description", content: "Controle de peças e acessórios com margem de lucro automática." },
     ],
   }),

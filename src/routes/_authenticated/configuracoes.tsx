@@ -16,9 +16,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   head: () => ({
     meta: [
-      { title: "Configurações — CelTech ERP" },
+      { title: "Configurações — JV Celulares" },
       { name: "description", content: "Perfil do usuário, fornecedores e categorias do sistema." },
-      { property: "og:title", content: "Configurações — CelTech ERP" },
+      { property: "og:title", content: "Configurações — JV Celulares" },
       { property: "og:description", content: "Ajuste dados da equipe, fornecedores e categorias." },
     ],
   }),

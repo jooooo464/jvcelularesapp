@@ -14,7 +14,6 @@ import {
   LogOut,
   Menu,
   X,
-  Smartphone,
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { isDevMode } from "@/lib/dev-mode";
+import { BrandLogo, BRAND_NAME } from "@/components/BrandLogo";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -80,11 +80,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
       >
         <div className="flex items-center gap-2.5 px-5 py-5">
-          <div className="brand-gradient flex size-9 items-center justify-center rounded-xl text-primary-foreground shadow-raised">
-            <Smartphone className="size-4.5" />
+          <div className="brand-frame size-9 p-1">
+            <BrandLogo className="size-full rounded-md" />
           </div>
           <div className="leading-tight">
-            <p className="font-display text-sm font-semibold text-sidebar-foreground">CelTech ERP</p>
+            <p className="font-display text-sm font-semibold text-sidebar-foreground">JV Celulares</p>
             <p className="text-[11px] text-muted-foreground">Assistência técnica</p>
           </div>
           <button
@@ -147,8 +147,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <Menu className="size-5" />
           </button>
+          <div className="brand-frame size-7 p-0.5 lg:hidden">
+            <BrandLogo className="size-full rounded" />
+          </div>
           <p className="font-display text-sm font-semibold">
-            {NAV.find((n) => n.to === pathname)?.label ?? "CelTech ERP"}
+            {NAV.find((n) => n.to === pathname)?.label ?? BRAND_NAME}
           </p>
           <Button
             variant="ghost"

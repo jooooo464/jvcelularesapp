@@ -17,9 +17,9 @@ import { brl, dateBR, todayISO } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/financeiro")({
   head: () => ({
     meta: [
-      { title: "Financeiro — CelTech ERP" },
+      { title: "Financeiro — JV Celulares" },
       { name: "description", content: "Contas a pagar, a receber, fluxo de caixa e vencimentos." },
-      { property: "og:title", content: "Financeiro — CelTech ERP" },
+      { property: "og:title", content: "Financeiro — JV Celulares" },
       { property: "og:description", content: "Acompanhe entradas, saídas e inadimplência em tempo real." },
     ],
   }),

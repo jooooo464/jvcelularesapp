@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { CalendarClock, Hash, Wrench, User, FileText, Camera, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { BrandLogo } from "@/components/BrandLogo";
 import { PortalTimeline } from "@/components/PortalTimeline";
 import { portalOrdem, portalResponderOrcamento } from "@/lib/portal.functions";
 import { brl, dateBR, dateTimeBR } from "@/lib/format";
@@ -72,8 +73,11 @@ function PortalOrdemPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl space-y-5 px-5 py-8">
-      <header>
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">CelTech Assistência Técnica</p>
+      <header className="flex flex-col items-start gap-3">
+        <div className="brand-frame size-12 p-1">
+          <BrandLogo className="size-full rounded-lg" />
+        </div>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary">JV Celulares · Assistência Técnica</p>
         <h1 className="font-display text-2xl font-semibold tracking-tight">
           Acompanhar meu reparo · OS #{os.numero_os}
         </h1>

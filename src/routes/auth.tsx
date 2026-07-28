@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Smartphone, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { BrandLogo, BRAND_NAME, BRAND_TAGLINE } from "@/components/BrandLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
@@ -31,13 +32,13 @@ export const Route = createFileRoute("/auth")({
   pendingMs: 0,
   head: () => ({
     meta: [
-      { title: "Entrar — CelTech ERP para Assistência Técnica" },
+      { title: "Entrar — JV Celulares para Assistência Técnica" },
       {
         name: "description",
         content:
-          "Acesse o CelTech ERP e gerencie ordens de serviço, estoque, PDV e financeiro da sua assistência técnica de celulares.",
+          "Acesse o JV Celulares e gerencie ordens de serviço, estoque, PDV e financeiro da sua assistência técnica de celulares.",
       },
-      { property: "og:title", content: "Entrar — CelTech ERP" },
+      { property: "og:title", content: "Entrar — JV Celulares" },
       {
         property: "og:description",
         content: "Gestão completa para assistências técnicas de celulares e lojas de acessórios.",
@@ -146,16 +147,14 @@ function AuthPage() {
   if (checking) return <LoadingScreen label="Verificando sessão..." />;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <div className="brand-backdrop flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="brand-gradient mb-4 flex size-12 items-center justify-center rounded-2xl text-primary-foreground shadow-raised">
-            <Smartphone className="size-6" />
+          <div className="brand-frame mb-4 size-20 p-2">
+            <BrandLogo className="size-full rounded-xl" />
           </div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">CelTech ERP</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Gestão completa da sua assistência técnica
-          </p>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">{BRAND_NAME}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{BRAND_TAGLINE}</p>
         </div>
 
         <div className="surface p-6">

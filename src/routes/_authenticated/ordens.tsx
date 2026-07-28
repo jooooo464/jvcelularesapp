@@ -21,13 +21,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { brl, dateBR, onlyDigits } from "@/lib/format";
 import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoesDialog";
+import { brandLogoUrl } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
     meta: [
-      { title: "Ordens de Serviço — CelTech ERP" },
+      { title: "Ordens de Serviço — JV Celulares" },
       { name: "description", content: "Abertura, acompanhamento e entrega de ordens de serviço." },
-      { property: "og:title", content: "Ordens de Serviço — CelTech ERP" },
+      { property: "og:title", content: "Ordens de Serviço — JV Celulares" },
       { property: "og:description", content: "Controle total do fluxo de reparos da sua assistência." },
     ],
   }),
@@ -179,6 +180,10 @@ function OrdensPage() {
       table{width:100%;border-collapse:collapse;margin-top:20px;font-size:13px}
       td,th{border:1px solid #ddd;padding:8px;text-align:left}
       .tot{font-size:18px;font-weight:700;margin-top:16px;text-align:right}</style></head><body>
+      <div style="display:flex;align-items:center;gap:12px;border-bottom:2px solid #1B3FE0;padding-bottom:12px;margin-bottom:16px">
+        <img src="${window.location.origin}${brandLogoUrl}" alt="JV Celulares" style="width:56px;height:56px;object-fit:contain;border-radius:8px" />
+        <div><div style="font-size:18px;font-weight:700;color:#1B3FE0">JV Celulares</div><div class="muted">Sistema de Gestão para Assistência Técnica</div></div>
+      </div>
       <h1>Ordem de Serviço #${os.numero_os}</h1>
       <p class="muted">Entrada: ${dateBR(os.data_entrada)} · Previsão: ${dateBR(os.previsao_entrega)}</p>
       <table>
@@ -196,6 +201,7 @@ function OrdensPage() {
       </table>
       <p class="tot">Total: ${brl(Number(os.valor_total))}</p>
       <p class="muted" style="margin-top:48px">Assinatura do cliente: ____________________________________</p>
+      <p class="muted" style="margin-top:24px;text-align:center">JV Celulares · Assistência Técnica</p>
       </body></html>`);
     w.document.close();
     w.print();
