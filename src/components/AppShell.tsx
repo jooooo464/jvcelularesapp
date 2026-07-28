@@ -23,6 +23,7 @@ import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { isDevMode } from "@/lib/dev-mode";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -60,6 +61,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background">
+      {isDevMode && (
+        <div className="fixed bottom-3 left-1/2 z-50 -translate-x-1/2 rounded-full border border-border bg-muted px-3 py-1 text-[11px] text-muted-foreground shadow-raised">
+          Modo de desenvolvimento
+        </div>
+      )}
       {open && (
         <div
           className="fixed inset-0 z-30 bg-foreground/30 backdrop-blur-sm lg:hidden"

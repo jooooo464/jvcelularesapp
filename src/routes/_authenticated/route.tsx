@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, isRedirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { LoadingScreen } from "@/components/LoadingScreen";
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated")({
       if (!data.session) throw redirect({ to: "/auth" });
       return { user: data.session.user };
     } catch (error) {
-      if ((error as { isRedirect?: boolean })?.isRedirect) throw error;
+      if (isRedirect(error)) throw error;
       console.error("[auth] falha ao restaurar sessão", error);
       throw redirect({ to: "/auth" });
     }
