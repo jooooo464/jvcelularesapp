@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate, Link, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,8 +11,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { friendlyAuthError, isDevMode } from "@/lib/dev-mode";
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
+  // Se já existe sessão válida, nunca mostrar a tela de login.
+  beforeLoad: async () => {
+    if (isDevMode) throw redirect({ to: "/dashboard" });
+    try {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) throw redirect({ to: "/dashboard" });
+    } catch (error) {
+      if ((error as { to?: string })?.to) throw error;
+      console.error("[auth] falha ao verificar sessão", error);
+    }
+  },
+  pendingComponent: () => <LoadingScreen label="Verificando sessão..." />,
+  pendingMs: 0,
   head: () => ({
     meta: [
       { title: "Entrar — CelTech ERP para Assistência Técnica" },
@@ -42,6 +58,32 @@ const signupSchema = loginSchema.extend({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!active) return;
+        if (data.session) navigate({ to: "/dashboard", replace: true });
+        else setChecking(false);
+      })
+      .catch((error) => {
+        console.error("[auth] getSession", error);
+        if (active) setChecking(false);
+      });
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
+        navigate({ to: "/dashboard", replace: true });
+      }
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, [navigate]);
+
   const [mode, setMode] = useState("login");
   const [busy, setBusy] = useState(false);
 
@@ -58,8 +100,9 @@ function AuthPage() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword(values);
     setBusy(false);
-    if (error) return toast.error("Não foi possível entrar", { description: error.message });
-    navigate({ to: "/dashboard" });
+    if (error)
+      return toast.error("Não foi possível entrar", { description: friendlyAuthError(error) });
+    navigate({ to: "/dashboard", replace: true });
   }
 
   async function onSignup(values: z.infer<typeof signupSchema>) {
@@ -70,18 +113,24 @@ function AuthPage() {
       options: { emailRedirectTo: window.location.origin, data: { nome: values.nome } },
     });
     setBusy(false);
-    if (error) return toast.error("Não foi possível criar a conta", { description: error.message });
+    if (error)
+      return toast.error("Não foi possível criar a conta", {
+        description: friendlyAuthError(error),
+      });
     toast.success("Conta criada", { description: "Você já pode acessar o sistema." });
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/dashboard", replace: true });
   }
 
   async function onGoogle() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
-    if (result.error) return toast.error("Falha no login com Google");
+    if (result.error)
+      return toast.error("Falha no login com Google", {
+        description: friendlyAuthError(result.error),
+      });
     if (result.redirected) return;
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/dashboard", replace: true });
   }
 
   async function onRecover() {
@@ -90,9 +139,11 @@ function AuthPage() {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyAuthError(error));
     toast.success("E-mail de recuperação enviado");
   }
+
+  if (checking) return <LoadingScreen label="Verificando sessão..." />;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
