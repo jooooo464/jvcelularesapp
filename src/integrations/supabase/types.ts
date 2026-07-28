@@ -58,6 +58,54 @@ export type Database = {
           },
         ]
       }
+      atualizacoes_os: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          foto_url: string | null
+          id: string
+          ordem_servico_id: string
+          status: string | null
+          titulo: string
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          foto_url?: string | null
+          id?: string
+          ordem_servico_id: string
+          status?: string | null
+          titulo: string
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          foto_url?: string | null
+          id?: string
+          ordem_servico_id?: string
+          status?: string | null
+          titulo?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atualizacoes_os_ordem_servico_id_fkey"
+            columns: ["ordem_servico_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "atualizacoes_os_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categorias: {
         Row: {
           created_at: string
@@ -287,6 +335,11 @@ export type Database = {
           fotos: string[]
           id: string
           numero_os: number
+          orcamento_dispositivo: string | null
+          orcamento_ip: string | null
+          orcamento_resposta_em: string | null
+          orcamento_status: string
+          portal_token: string
           previsao_entrega: string | null
           servico_realizado: string | null
           status: Database["public"]["Enums"]["os_status"]
@@ -307,6 +360,11 @@ export type Database = {
           fotos?: string[]
           id?: string
           numero_os?: number
+          orcamento_dispositivo?: string | null
+          orcamento_ip?: string | null
+          orcamento_resposta_em?: string | null
+          orcamento_status?: string
+          portal_token?: string
           previsao_entrega?: string | null
           servico_realizado?: string | null
           status?: Database["public"]["Enums"]["os_status"]
@@ -327,6 +385,11 @@ export type Database = {
           fotos?: string[]
           id?: string
           numero_os?: number
+          orcamento_dispositivo?: string | null
+          orcamento_ip?: string | null
+          orcamento_resposta_em?: string | null
+          orcamento_status?: string
+          portal_token?: string
           previsao_entrega?: string | null
           servico_realizado?: string | null
           status?: Database["public"]["Enums"]["os_status"]
@@ -355,6 +418,44 @@ export type Database = {
             columns: ["tecnico_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_codigos: {
+        Row: {
+          cliente_id: string
+          codigo: string
+          created_at: string
+          expira_em: string
+          id: string
+          identificador: string
+          usado: boolean
+        }
+        Insert: {
+          cliente_id: string
+          codigo: string
+          created_at?: string
+          expira_em?: string
+          id?: string
+          identificador: string
+          usado?: boolean
+        }
+        Update: {
+          cliente_id?: string
+          codigo?: string
+          created_at?: string
+          expira_em?: string
+          id?: string
+          identificador?: string
+          usado?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_codigos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
             referencedColumns: ["id"]
           },
         ]
