@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search, Printer, MessageCircle, Pencil, Activity } from "lucide-react";
+import { Plus, Search, Printer, MessageCircle, Pencil, Activity, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState } from "@/components/ui-kit";
 import { Field } from "./clientes";
@@ -22,6 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { brl, dateBR, onlyDigits } from "@/lib/format";
 import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoesDialog";
 import { brandLogoUrl } from "@/components/BrandLogo";
+import { PortalShareDialog, type OsShare } from "@/components/PortalShareDialog";
 
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
@@ -64,6 +65,7 @@ function OrdensPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [f, setF] = useState({ ...vazio });
   const [portalOs, setPortalOs] = useState<OsPortal | null>(null);
+  const [shareOs, setShareOs] = useState<OsShare | null>(null);
 
   const { data: ordens = [] } = useQuery({
     queryKey: ["ordens"],
@@ -278,6 +280,14 @@ function OrdensPage() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        aria-label="Compartilhar portal do cliente"
+                        onClick={() => setShareOs(o as unknown as OsShare)}
+                      >
+                        <Share2 className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         aria-label="Atualizações do portal"
                         onClick={() => setPortalOs(o as unknown as OsPortal)}
                       >
@@ -393,6 +403,7 @@ function OrdensPage() {
         </DialogContent>
       </Dialog>
 
+      <PortalShareDialog os={shareOs} open={!!shareOs} onOpenChange={(v) => !v && setShareOs(null)} />
       <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />
     </div>
   );

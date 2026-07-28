@@ -339,6 +339,9 @@ export type Database = {
           orcamento_ip: string | null
           orcamento_resposta_em: string | null
           orcamento_status: string
+          portal_ativo: boolean
+          portal_criado_em: string
+          portal_link: string | null
           portal_token: string
           previsao_entrega: string | null
           servico_realizado: string | null
@@ -364,6 +367,9 @@ export type Database = {
           orcamento_ip?: string | null
           orcamento_resposta_em?: string | null
           orcamento_status?: string
+          portal_ativo?: boolean
+          portal_criado_em?: string
+          portal_link?: string | null
           portal_token?: string
           previsao_entrega?: string | null
           servico_realizado?: string | null
@@ -389,6 +395,9 @@ export type Database = {
           orcamento_ip?: string | null
           orcamento_resposta_em?: string | null
           orcamento_status?: string
+          portal_ativo?: boolean
+          portal_criado_em?: string
+          portal_link?: string | null
           portal_token?: string
           previsao_entrega?: string | null
           servico_realizado?: string | null
