@@ -62,8 +62,15 @@ function PortalOrdemPage() {
   if (isLoading) return <LoadingScreen label="Carregando sua ordem de serviço..." />;
   if (!data?.ok)
     return (
-      <main className="flex min-h-svh items-center justify-center p-6 text-center">
-        <p className="text-sm text-muted-foreground">{data?.erro ?? "Link inválido."}</p>
+      <main className="flex min-h-svh flex-col items-center justify-center gap-4 p-6 text-center">
+        <div className="brand-frame size-14 p-1">
+          <BrandLogo className="size-full rounded-lg" />
+        </div>
+        <h1 className="font-display text-xl font-semibold">Link inválido ou expirado</h1>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          {data?.erro ?? "Não encontramos nenhuma ordem de serviço para este link."} Confira o endereço recebido ou
+          entre em contato com a JV Celulares.
+        </p>
       </main>
     );
 
