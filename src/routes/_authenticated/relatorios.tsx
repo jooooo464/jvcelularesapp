@@ -25,9 +25,9 @@ import { brl, dateBR } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/relatorios")({
   head: () => ({
     meta: [
-      { title: "Relatórios — CelTech ERP" },
+      { title: "Relatórios — JV Celulares" },
       { name: "description", content: "Faturamento, lucratividade, produtos mais vendidos e desempenho de serviços." },
-      { property: "og:title", content: "Relatórios — CelTech ERP" },
+      { property: "og:title", content: "Relatórios — JV Celulares" },
       { property: "og:description", content: "Analise vendas, ordens de serviço e margens por período." },
     ],
   }),

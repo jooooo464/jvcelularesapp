@@ -29,9 +29,9 @@ import { Badge } from "@/components/ui/badge";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — CelTech ERP" },
+      { title: "Dashboard — JV Celulares" },
       { name: "description", content: "Indicadores de faturamento, lucro, ordens e estoque." },
-      { property: "og:title", content: "Dashboard — CelTech ERP" },
+      { property: "og:title", content: "Dashboard — JV Celulares" },
       { property: "og:description", content: "Visão geral da sua assistência técnica." },
     ],
   }),

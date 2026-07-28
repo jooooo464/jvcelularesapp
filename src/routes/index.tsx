@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CelTech ERP — Gestão para assistência técnica de celulares" },
+      { title: "JV Celulares — Gestão para assistência técnica de celulares" },
       {
         name: "description",
         content:
           "ERP completo para assistências técnicas: ordens de serviço, estoque de peças, PDV, financeiro e relatórios em um só lugar.",
       },
-      { property: "og:title", content: "CelTech ERP — Gestão para assistência técnica de celulares" },
+      { property: "og:title", content: "JV Celulares — Gestão para assistência técnica de celulares" },
       {
         property: "og:description",
         content: "Ordens de serviço, estoque, PDV e financeiro integrados para sua assistência técnica.",
@@ -37,7 +37,7 @@ function Landing() {
         <div className="brand-gradient flex size-9 items-center justify-center rounded-xl text-primary-foreground shadow-raised">
           <Smartphone className="size-4.5" />
         </div>
-        <span className="font-display text-sm font-semibold">CelTech ERP</span>
+        <span className="font-display text-sm font-semibold">JV Celulares</span>
         <Button asChild variant="ghost" size="sm" className="ml-auto">
           <Link to="/portal">Acompanhar meu reparo</Link>
         </Button>
@@ -84,7 +84,7 @@ function Landing() {
       </main>
 
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
-        CelTech ERP · Gestão completa para assistência técnica
+        JV Celulares · Gestão completa para assistência técnica
       </footer>
     </div>
   );

@@ -25,9 +25,9 @@ import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoes
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
     meta: [
-      { title: "Ordens de Serviço — CelTech ERP" },
+      { title: "Ordens de Serviço — JV Celulares" },
       { name: "description", content: "Abertura, acompanhamento e entrega de ordens de serviço." },
-      { property: "og:title", content: "Ordens de Serviço — CelTech ERP" },
+      { property: "og:title", content: "Ordens de Serviço — JV Celulares" },
       { property: "og:description", content: "Controle total do fluxo de reparos da sua assistência." },
     ],
   }),

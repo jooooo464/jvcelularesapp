@@ -31,13 +31,13 @@ export const Route = createFileRoute("/auth")({
   pendingMs: 0,
   head: () => ({
     meta: [
-      { title: "Entrar — CelTech ERP para Assistência Técnica" },
+      { title: "Entrar — JV Celulares para Assistência Técnica" },
       {
         name: "description",
         content:
-          "Acesse o CelTech ERP e gerencie ordens de serviço, estoque, PDV e financeiro da sua assistência técnica de celulares.",
+          "Acesse o JV Celulares e gerencie ordens de serviço, estoque, PDV e financeiro da sua assistência técnica de celulares.",
       },
-      { property: "og:title", content: "Entrar — CelTech ERP" },
+      { property: "og:title", content: "Entrar — JV Celulares" },
       {
         property: "og:description",
         content: "Gestão completa para assistências técnicas de celulares e lojas de acessórios.",
@@ -152,7 +152,7 @@ function AuthPage() {
           <div className="brand-gradient mb-4 flex size-12 items-center justify-center rounded-2xl text-primary-foreground shadow-raised">
             <Smartphone className="size-6" />
           </div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">CelTech ERP</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">JV Celulares</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Gestão completa da sua assistência técnica
           </p>

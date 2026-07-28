@@ -73,7 +73,7 @@ function PortalOrdemPage() {
   return (
     <main className="mx-auto w-full max-w-3xl space-y-5 px-5 py-8">
       <header>
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">CelTech Assistência Técnica</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary">JV Celulares · Assistência Técnica</p>
         <h1 className="font-display text-2xl font-semibold tracking-tight">
           Acompanhar meu reparo · OS #{os.numero_os}
         </h1>

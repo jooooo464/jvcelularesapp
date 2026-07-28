@@ -15,9 +15,9 @@ import { brl } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/pdv")({
   head: () => ({
     meta: [
-      { title: "PDV — CelTech ERP" },
+      { title: "PDV — JV Celulares" },
       { name: "description", content: "Ponto de venda rápido com baixa automática de estoque." },
-      { property: "og:title", content: "PDV — CelTech ERP" },
+      { property: "og:title", content: "PDV — JV Celulares" },
       { property: "og:description", content: "Venda acessórios e peças em poucos cliques." },
     ],
   }),

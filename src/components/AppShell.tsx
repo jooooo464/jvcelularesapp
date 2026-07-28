@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Smartphone className="size-4.5" />
           </div>
           <div className="leading-tight">
-            <p className="font-display text-sm font-semibold text-sidebar-foreground">CelTech ERP</p>
+            <p className="font-display text-sm font-semibold text-sidebar-foreground">JV Celulares</p>
             <p className="text-[11px] text-muted-foreground">Assistência técnica</p>
           </div>
           <button
@@ -148,7 +148,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Menu className="size-5" />
           </button>
           <p className="font-display text-sm font-semibold">
-            {NAV.find((n) => n.to === pathname)?.label ?? "CelTech ERP"}
+            {NAV.find((n) => n.to === pathname)?.label ?? "JV Celulares"}
           </p>
           <Button
             variant="ghost"

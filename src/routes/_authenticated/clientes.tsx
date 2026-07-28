@@ -26,9 +26,9 @@ import { dateBR, onlyDigits } from "@/lib/format";
 export const Route = createFileRoute("/_authenticated/clientes")({
   head: () => ({
     meta: [
-      { title: "Clientes — CelTech ERP" },
+      { title: "Clientes — JV Celulares" },
       { name: "description", content: "Cadastro, busca e histórico de clientes da assistência técnica." },
-      { property: "og:title", content: "Clientes — CelTech ERP" },
+      { property: "og:title", content: "Clientes — JV Celulares" },
       { property: "og:description", content: "Gerencie a base de clientes e seus aparelhos." },
     ],
   }),
