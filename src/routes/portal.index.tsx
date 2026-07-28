@@ -2,7 +2,9 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Smartphone, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { portalSolicitarCodigo, portalVerificarCodigo } from "@/lib/portal.functions";
