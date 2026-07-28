@@ -1,0 +1,2 @@
+UPDATE public.user_roles SET role='administrador'::public.app_role WHERE user_id = (SELECT id FROM auth.users WHERE email='admin@admin.com');
+UPDATE public.profiles SET nome='Administrador', ativo=true WHERE email='admin@admin.com';
