@@ -1,0 +1,11 @@
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.set_updated_at() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.calc_lucro_produto() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.calc_total_os() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.item_venda_baixa_estoque() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.item_venda_devolve_estoque() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.venda_lanca_financeiro() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.os_lanca_financeiro() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.registra_auditoria() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.is_active_user() FROM anon;
