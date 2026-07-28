@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, redirect, isRedirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/auth")({
       const { data } = await supabase.auth.getSession();
       if (data.session) throw redirect({ to: "/dashboard" });
     } catch (error) {
-      if ((error as { to?: string })?.to) throw error;
+      if (isRedirect(error)) throw error;
       console.error("[auth] falha ao verificar sessão", error);
     }
   },
