@@ -63,14 +63,16 @@ function PortalLogin() {
   return (
     <main className="mx-auto flex min-h-svh w-full max-w-md flex-col justify-center px-5 py-12">
       <div className="mb-8 text-center">
-        <span className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-primary/12 text-primary">
-          <Smartphone className="size-6" />
-        </span>
+        <div className="brand-frame mx-auto mb-4 size-16 p-1.5">
+          <BrandLogo className="size-full rounded-xl" />
+        </div>
+        <p className="text-xs font-medium uppercase tracking-wide text-primary">JV Celulares</p>
         <h1 className="font-display text-2xl font-semibold tracking-tight">Acompanhar meu reparo</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Entre com seu CPF ou telefone para ver o andamento do seu aparelho.
         </p>
       </div>
+
 
       <div className="surface space-y-4 p-5">
         {etapa === "identificar" && (
