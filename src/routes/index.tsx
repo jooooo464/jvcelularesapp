@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Smartphone, Wrench, Boxes, ShoppingCart, Wallet, BarChart3, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,8 +35,8 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-6xl items-center gap-2.5 px-6 py-6">
-        <div className="brand-gradient flex size-9 items-center justify-center rounded-xl text-primary-foreground shadow-raised">
-          <Smartphone className="size-4.5" />
+        <div className="brand-frame size-9 p-1">
+          <BrandLogo className="size-full rounded-md" />
         </div>
         <span className="font-display text-sm font-semibold">JV Celulares</span>
         <Button asChild variant="ghost" size="sm" className="ml-auto">

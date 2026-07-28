@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Smartphone, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { BrandLogo, BRAND_NAME, BRAND_TAGLINE } from "@/components/BrandLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
@@ -146,16 +147,14 @@ function AuthPage() {
   if (checking) return <LoadingScreen label="Verificando sessão..." />;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <div className="brand-backdrop flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="brand-gradient mb-4 flex size-12 items-center justify-center rounded-2xl text-primary-foreground shadow-raised">
-            <Smartphone className="size-6" />
+          <div className="brand-frame mb-4 size-20 p-2">
+            <BrandLogo className="size-full rounded-xl" />
           </div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">JV Celulares</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Gestão completa da sua assistência técnica
-          </p>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">{BRAND_NAME}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{BRAND_TAGLINE}</p>
         </div>
 
         <div className="surface p-6">
