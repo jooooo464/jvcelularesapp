@@ -106,6 +106,45 @@ export type Database = {
           },
         ]
       }
+      auditoria_os: {
+        Row: {
+          acao: string
+          created_at: string
+          dispositivo: string | null
+          id: string
+          ip: string | null
+          motivo: string | null
+          numero_os: number | null
+          ordem_servico_id: string | null
+          usuario_id: string | null
+          usuario_nome: string | null
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          dispositivo?: string | null
+          id?: string
+          ip?: string | null
+          motivo?: string | null
+          numero_os?: number | null
+          ordem_servico_id?: string | null
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          dispositivo?: string | null
+          id?: string
+          ip?: string | null
+          motivo?: string | null
+          numero_os?: number | null
+          ordem_servico_id?: string | null
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           created_at: string
@@ -325,15 +364,21 @@ export type Database = {
       ordens_servico: {
         Row: {
           aparelho_id: string | null
+          cancelada_em: string | null
+          cancelada_por: string | null
           cliente_id: string
           created_at: string
           data_entrada: string
           data_entrega: string | null
           defeito: string
+          deleted: boolean
+          deleted_at: string | null
+          deleted_by: string | null
           desconto: number
           diagnostico: string | null
           fotos: string[]
           id: string
+          motivo_cancelamento: string | null
           numero_os: number
           orcamento_dispositivo: string | null
           orcamento_ip: string | null
@@ -353,15 +398,21 @@ export type Database = {
         }
         Insert: {
           aparelho_id?: string | null
+          cancelada_em?: string | null
+          cancelada_por?: string | null
           cliente_id: string
           created_at?: string
           data_entrada?: string
           data_entrega?: string | null
           defeito?: string
+          deleted?: boolean
+          deleted_at?: string | null
+          deleted_by?: string | null
           desconto?: number
           diagnostico?: string | null
           fotos?: string[]
           id?: string
+          motivo_cancelamento?: string | null
           numero_os?: number
           orcamento_dispositivo?: string | null
           orcamento_ip?: string | null
@@ -381,15 +432,21 @@ export type Database = {
         }
         Update: {
           aparelho_id?: string | null
+          cancelada_em?: string | null
+          cancelada_por?: string | null
           cliente_id?: string
           created_at?: string
           data_entrada?: string
           data_entrega?: string | null
           defeito?: string
+          deleted?: boolean
+          deleted_at?: string | null
+          deleted_by?: string | null
           desconto?: number
           diagnostico?: string | null
           fotos?: string[]
           id?: string
+          motivo_cancelamento?: string | null
           numero_os?: number
           orcamento_dispositivo?: string | null
           orcamento_ip?: string | null
@@ -653,6 +710,7 @@ export type Database = {
         | "Em manutenção"
         | "Pronto"
         | "Entregue"
+        | "Cancelada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -791,6 +849,7 @@ export const Constants = {
         "Em manutenção",
         "Pronto",
         "Entregue",
+        "Cancelada",
       ],
     },
   },
