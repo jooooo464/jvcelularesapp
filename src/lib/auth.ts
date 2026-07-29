@@ -41,3 +41,8 @@ export function useProfile() {
     },
   });
 }
+
+export function useIsAdmin() {
+  const { data } = useProfile();
+  return (data?.roles ?? []).includes("administrador");
+}

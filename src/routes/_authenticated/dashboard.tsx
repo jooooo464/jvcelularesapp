@@ -47,7 +47,7 @@ function Dashboard() {
 
       const [fin, os, produtos, clientes, itens] = await Promise.all([
         supabase.from("financeiro").select("tipo,valor,vencimento,status,created_at"),
-        supabase.from("ordens_servico").select("status,valor_total,valor_pecas,data_entrada,numero_os,previsao_entrega,clientes(nome)").order("data_entrada", { ascending: false }),
+        supabase.from("ordens_servico").select("status,valor_total,valor_pecas,data_entrada,numero_os,previsao_entrega,clientes(nome)").eq("deleted", false).order("data_entrada", { ascending: false }),
         supabase.from("produtos").select("nome,quantidade,estoque_minimo"),
         supabase.from("clientes").select("id", { count: "exact", head: true }),
         supabase.from("itens_venda").select("quantidade,valor_unitario,custo_unitario,vendas(created_at)"),

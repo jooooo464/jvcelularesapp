@@ -9,6 +9,7 @@ import {
   Wallet,
   BarChart3,
   Settings,
+  Trash2,
   Moon,
   Sun,
   LogOut,
@@ -35,6 +36,8 @@ const NAV = [
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
+
+const NAV_ADMIN = [{ to: "/ordens-lixeira", label: "OS Excluídas", icon: Trash2 }] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -97,7 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
-          {NAV.map(({ to, label, icon: Icon }) => {
+          {[...NAV, ...((data?.roles ?? []).includes("administrador") ? NAV_ADMIN : [])].map(({ to, label, icon: Icon }) => {
             const active = pathname === to;
             return (
               <Link

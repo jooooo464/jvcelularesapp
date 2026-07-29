@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search, Printer, MessageCircle, Pencil, Activity, Share2 } from "lucide-react";
+import { Plus, Search, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState } from "@/components/ui-kit";
 import { Field } from "./clientes";
@@ -23,6 +23,9 @@ import { brl, dateBR, onlyDigits } from "@/lib/format";
 import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoesDialog";
 import { brandLogoUrl } from "@/components/BrandLogo";
 import { PortalShareDialog, type OsShare } from "@/components/PortalShareDialog";
+import { OsAcoesMenu } from "@/components/OsAcoesMenu";
+import { useIsAdmin } from "@/lib/auth";
+
 
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
@@ -66,6 +69,7 @@ function OrdensPage() {
   const [f, setF] = useState({ ...vazio });
   const [portalOs, setPortalOs] = useState<OsPortal | null>(null);
   const [shareOs, setShareOs] = useState<OsShare | null>(null);
+  const isAdmin = useIsAdmin();
 
   const { data: ordens = [] } = useQuery({
     queryKey: ["ordens"],
@@ -73,6 +77,7 @@ function OrdensPage() {
       const { data, error } = await supabase
         .from("ordens_servico")
         .select("*, clientes(nome,whatsapp), aparelhos(marca,modelo,imei,cor), profiles(nome)")
+        .eq("deleted", false)
         .order("data_entrada", { ascending: false });
       if (error) throw error;
       return data;
@@ -221,6 +226,7 @@ function OrdensPage() {
           <SelectContent>
             <SelectItem value="todas">Todos os status</SelectItem>
             {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            <SelectItem value="Cancelada">Cancelada</SelectItem>
           </SelectContent>
         </Select>
         <Button onClick={() => { setEditId(null); setF({ ...vazio }); setOpen(true); }}>
@@ -253,12 +259,16 @@ function OrdensPage() {
                     {[o.aparelhos?.marca, o.aparelhos?.modelo].filter(Boolean).join(" ") || "—"}
                   </TableCell>
                   <TableCell>
-                    <Select value={o.status} onValueChange={(v) => mudarStatus.mutate({ id: o.id, status: v as Status })}>
-                      <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    {o.status === "Cancelada" ? (
+                      <Badge variant="destructive" title={o.motivo_cancelamento ?? undefined}>CANCELADA</Badge>
+                    ) : (
+                      <Select value={o.status} onValueChange={(v) => mudarStatus.mutate({ id: o.id, status: v as Status })}>
+                        <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </TableCell>
                   <TableCell className="hidden text-muted-foreground lg:table-cell">{dateBR(o.previsao_entrega)}</TableCell>
                   <TableCell className="numeric text-right font-medium">{brl(Number(o.valor_total))}</TableCell>
@@ -277,30 +287,13 @@ function OrdensPage() {
                           </a>
                         </Button>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Compartilhar portal do cliente"
-                        onClick={() => setShareOs(o as unknown as OsShare)}
-                      >
-                        <Share2 className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Atualizações do portal"
-                        onClick={() => setPortalOs(o as unknown as OsPortal)}
-                      >
-                        <Activity className="size-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" aria-label="Imprimir" onClick={() => imprimir(o)}>
-                        <Printer className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Editar"
-                        onClick={() => {
+                      <OsAcoesMenu
+                        os={{ id: o.id, numero_os: o.numero_os, status: o.status, fotos: o.fotos }}
+                        isAdmin={isAdmin}
+                        onCompartilhar={() => setShareOs(o as unknown as OsShare)}
+                        onAtualizacoes={() => setPortalOs(o as unknown as OsPortal)}
+                        onImprimir={() => imprimir(o)}
+                        onEditar={() => {
                           setEditId(o.id);
                           setF({
                             cliente_id: o.cliente_id,
@@ -321,9 +314,8 @@ function OrdensPage() {
                           });
                           setOpen(true);
                         }}
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
+                      />
+
                     </div>
                   </TableCell>
                 </TableRow>
