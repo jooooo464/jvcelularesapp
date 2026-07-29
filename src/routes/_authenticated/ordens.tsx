@@ -448,6 +448,71 @@ function OrdensPage() {
       </Dialog>
 
       <PortalShareDialog os={shareOs} open={!!shareOs} onOpenChange={(v) => !v && setShareOs(null)} />
+
+      <Dialog open={!!entrega} onOpenChange={(v) => !v && setEntrega(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirmar entrega e pagamento — OS #{entrega?.numero_os}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              O valor só entra no faturamento real após a confirmação do pagamento recebido.
+            </p>
+            <Field label="Forma de pagamento">
+              <Select value={pagamento.forma} onValueChange={(v) => setPagamento({ ...pagamento, forma: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["PIX", "Dinheiro", "Cartão de débito", "Cartão de crédito", "Transferência"].map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Valor recebido">
+              <Input
+                type="number"
+                step="0.01"
+                value={pagamento.valor}
+                onChange={(e) => setPagamento({ ...pagamento, valor: e.target.value })}
+              />
+            </Field>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (!entrega) return;
+                mudarStatus.mutate({
+                  id: entrega.id,
+                  status: "Entregue",
+                  extra: { status_pagamento: "Pendente", forma_pagamento: "", valor_recebido: 0 },
+                });
+                setEntrega(null);
+              }}
+            >
+              Entregar sem pagamento
+            </Button>
+            <Button
+              onClick={() => {
+                if (!entrega) return;
+                mudarStatus.mutate({
+                  id: entrega.id,
+                  status: "Entregue",
+                  extra: {
+                    status_pagamento: "Pago",
+                    forma_pagamento: pagamento.forma,
+                    valor_recebido: Number(pagamento.valor) || 0,
+                  },
+                });
+                setEntrega(null);
+              }}
+            >
+              Confirmar pagamento
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <OsInspecaoDialog os={inspecaoOs} open={!!inspecaoOs} onOpenChange={(v) => !v && setInspecaoOs(null)} />
       <OsWhatsappDialog os={whatsOs} open={!!whatsOs} onOpenChange={(v) => !v && setWhatsOs(null)} />
       <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />
