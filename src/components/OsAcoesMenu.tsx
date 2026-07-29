@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Field } from "@/components/ui-kit";
+import { Field } from "@/routes/_authenticated/clientes";
 import { cancelarOs, excluirOs } from "@/lib/os-acoes";
 
 export type OsAcao = { id: string; numero_os: number; status: string; fotos?: string[] | null };
