@@ -69,6 +69,7 @@ function OrdensPage() {
   const [f, setF] = useState({ ...vazio });
   const [portalOs, setPortalOs] = useState<OsPortal | null>(null);
   const [shareOs, setShareOs] = useState<OsShare | null>(null);
+  const isAdmin = useIsAdmin();
 
   const { data: ordens = [] } = useQuery({
     queryKey: ["ordens"],
@@ -76,6 +77,7 @@ function OrdensPage() {
       const { data, error } = await supabase
         .from("ordens_servico")
         .select("*, clientes(nome,whatsapp), aparelhos(marca,modelo,imei,cor), profiles(nome)")
+        .eq("deleted", false)
         .order("data_entrada", { ascending: false });
       if (error) throw error;
       return data;
