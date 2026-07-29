@@ -24,6 +24,7 @@ import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoes
 import { brandLogoUrl } from "@/components/BrandLogo";
 import { PortalShareDialog, type OsShare } from "@/components/PortalShareDialog";
 import { OsAcoesMenu } from "@/components/OsAcoesMenu";
+import { OsInspecaoDialog, type OsInspecao } from "@/components/OsInspecaoDialog";
 import { useIsAdmin } from "@/lib/auth";
 
 
@@ -69,6 +70,7 @@ function OrdensPage() {
   const [f, setF] = useState({ ...vazio });
   const [portalOs, setPortalOs] = useState<OsPortal | null>(null);
   const [shareOs, setShareOs] = useState<OsShare | null>(null);
+  const [inspecaoOs, setInspecaoOs] = useState<OsInspecao | null>(null);
   const isAdmin = useIsAdmin();
 
   const { data: ordens = [] } = useQuery({
@@ -292,6 +294,7 @@ function OrdensPage() {
                         isAdmin={isAdmin}
                         onCompartilhar={() => setShareOs(o as unknown as OsShare)}
                         onAtualizacoes={() => setPortalOs(o as unknown as OsPortal)}
+                        onInspecao={() => setInspecaoOs({ id: o.id, numero_os: o.numero_os, status: o.status })}
                         onImprimir={() => imprimir(o)}
                         onEditar={() => {
                           setEditId(o.id);
@@ -396,6 +399,7 @@ function OrdensPage() {
       </Dialog>
 
       <PortalShareDialog os={shareOs} open={!!shareOs} onOpenChange={(v) => !v && setShareOs(null)} />
+      <OsInspecaoDialog os={inspecaoOs} open={!!inspecaoOs} onOpenChange={(v) => !v && setInspecaoOs(null)} />
       <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />
     </div>
   );
