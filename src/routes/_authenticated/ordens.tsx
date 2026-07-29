@@ -301,7 +301,7 @@ function OrdensPage() {
                     {o.status === "Cancelada" ? (
                       <Badge variant="destructive" title={o.motivo_cancelamento ?? undefined}>CANCELADA</Badge>
                     ) : (
-                      <Select value={o.status} onValueChange={(v) => mudarStatus.mutate({ id: o.id, status: v as Status })}>
+                      <Select value={o.status} onValueChange={(v) => trocarStatus(o, v as Status)}>
                         <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -310,7 +310,17 @@ function OrdensPage() {
                     )}
                   </TableCell>
                   <TableCell className="hidden text-muted-foreground lg:table-cell">{dateBR(o.previsao_entrega)}</TableCell>
-                  <TableCell className="numeric text-right font-medium">{brl(Number(o.valor_total))}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="numeric font-medium">{brl(Number(o.valor_total))}</div>
+                    {o.status === "Entregue" && o.status_pagamento === "Pago" ? (
+                      <span className="text-[11px] text-success">Recebido · {o.forma_pagamento || "—"}</span>
+                    ) : o.orcamento_aprovado ? (
+                      <span className="text-[11px] text-warning">Futuro faturamento</span>
+                    ) : (
+                      <span className="text-[11px] text-muted-foreground">Sem faturamento</span>
+                    )}
+                  </TableCell>
+
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button
