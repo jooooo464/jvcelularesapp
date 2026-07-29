@@ -213,7 +213,7 @@ export function OsInspecaoDialog({
           {checklist?.inspecionado_em && (
             <p className="text-xs text-muted-foreground">
               Última inspeção em {dateTimeBR(checklist.inspecionado_em)}
-              {checklist.profiles?.nome ? ` · Técnico ${checklist.profiles.nome}` : ""}
+              
             </p>
           )}
 
