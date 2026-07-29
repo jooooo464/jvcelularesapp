@@ -107,9 +107,14 @@ function Dashboard() {
         (s) => ({ status: s, total: osRows.filter((o) => o.status === s).length }),
       );
 
+      const faturamentoRealMes = entreguesPagas
+        .filter((o) => (o.data_pagamento ?? o.data_entrada).slice(0, 10) >= inicioMes)
+        .reduce((s, o) => s + Number(o.valor_recebido || o.valor_total), 0);
+
       return {
         entradasHoje,
         entradasMes,
+        faturamentoRealMes,
         lucroMes: lucroProdutos + lucroServicos - saidasMes,
         emAndamento,
         concluidas,
@@ -119,7 +124,11 @@ function Dashboard() {
         clientes: clientes.count ?? 0,
         serie,
         statusCount,
+        futuroOs,
+        futuroTotal,
+        ticketFuturo: futuroOs.length ? futuroTotal / futuroOs.length : 0,
       };
+
     },
   });
 
