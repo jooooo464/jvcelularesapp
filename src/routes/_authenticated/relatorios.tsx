@@ -158,7 +158,7 @@ function RelatoriosPage() {
 
   return (
     <div>
-      <PageHeader title="Relatórios" description="Desempenho comercial e operacional por período.">
+      <PageHeader title="Relatórios" description="Faturamento real e previsão de receita por período.">
         <Select value={dias} onValueChange={setDias}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -168,15 +168,36 @@ function RelatoriosPage() {
             <SelectItem value="365">Últimos 12 meses</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={fTecnico} onValueChange={setFTecnico}>
+          <SelectTrigger className="w-40"><SelectValue placeholder="Técnico" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os técnicos</SelectItem>
+            {opcoesTecnicos.map(([id, nome]) => <SelectItem key={id} value={id}>{nome}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={fCliente} onValueChange={setFCliente}>
+          <SelectTrigger className="w-40"><SelectValue placeholder="Cliente" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os clientes</SelectItem>
+            {opcoesClientes.map(([id, nome]) => <SelectItem key={id} value={id}>{nome}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={fStatus} onValueChange={setFStatus}>
+          <SelectTrigger className="w-40"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os status</SelectItem>
+            {opcoesStatus.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
         <Button variant="outline" onClick={exportarCSV}>
           <Download className="size-4" /> Exportar CSV
         </Button>
       </PageHeader>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Faturamento total" value={brl(faturamento)} icon={TrendingUp} tone="brand" />
+        <StatCard label="Faturamento real" value={brl(faturamento)} hint="Somente valores recebidos" icon={TrendingUp} tone="brand" />
         <StatCard label="Vendas (PDV)" value={brl(faturamentoVendas)} icon={ShoppingBag} hint={`${vendas.length} venda(s)`} />
-        <StatCard label="Serviços (OS)" value={brl(faturamentoOS)} icon={Wrench} hint={`${ordens.length} ordem(ns)`} />
+        <StatCard label="Serviços entregues e pagos" value={brl(faturamentoOS)} icon={Wrench} hint={`${ordensReais.length} ordem(ns)`} />
         <StatCard
           label="Lucro bruto"
           value={brl(lucro)}
@@ -186,8 +207,83 @@ function RelatoriosPage() {
         />
       </div>
 
+      <div className="mb-6 grid gap-6 lg:grid-cols-2">
+        <div className="surface overflow-hidden">
+          <div className="px-5 pt-5">
+            <h2 className="text-sm font-semibold">Faturamento real — serviços entregues e pagos</h2>
+            <p className="text-xs text-muted-foreground">{ordensReais.length} ordem(ns) · {brl(faturamentoOS)}</p>
+          </div>
+          {ordensReais.length === 0 ? (
+            <div className="p-5"><EmptyState message="Nenhum serviço pago no período." /></div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>OS</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Pagamento</TableHead>
+                  <TableHead>Entrega</TableHead>
+                  <TableHead className="text-right">Recebido</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ordensReais.map((o) => (
+                  <TableRow key={o.id}>
+                    <TableCell className="numeric">#{o.numero_os}</TableCell>
+                    <TableCell>{o.clientes?.nome ?? "—"}</TableCell>
+                    <TableCell>{o.forma_pagamento ?? "—"}</TableCell>
+                    <TableCell className="text-muted-foreground">{dateBR(o.data_entrega)}</TableCell>
+                    <TableCell className="numeric text-right font-medium">
+                      {brl(Number(o.valor_recebido || o.valor_total))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+
+        <div className="surface overflow-hidden border-warning/40">
+          <div className="px-5 pt-5">
+            <h2 className="text-sm font-semibold text-warning">Futuro faturamento — aprovados e não concluídos</h2>
+            <p className="text-xs text-muted-foreground">
+              {ordensFuturas.length} serviço(s) · previsto {brl(futuroTotal)} · ticket médio {brl(ticketFuturo)}
+            </p>
+          </div>
+          {ordensFuturas.length === 0 ? (
+            <div className="p-5"><EmptyState message="Nenhum orçamento aprovado em aberto." /></div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>OS</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Técnico</TableHead>
+                  <TableHead className="text-right">Previsto</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ordensFuturas.map((o) => (
+                  <TableRow key={o.id}>
+                    <TableCell className="numeric">#{o.numero_os}</TableCell>
+                    <TableCell>{o.clientes?.nome ?? "—"}</TableCell>
+                    <TableCell>{o.status}</TableCell>
+                    <TableCell className="text-muted-foreground">{o.profiles?.nome ?? "—"}</TableCell>
+                    <TableCell className="numeric text-right font-medium text-warning">
+                      {brl(Number(o.valor_total))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="surface p-5">
+
           <h2 className="mb-4 text-sm font-semibold">Ordens por status</h2>
           {statusOS.length === 0 ? (
             <EmptyState message="Sem ordens no período." />
