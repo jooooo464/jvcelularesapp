@@ -70,9 +70,16 @@ function Dashboard() {
       const lucroProdutos = (itens.data ?? [])
         .filter((i) => (i.vendas?.created_at ?? "").slice(0, 10) >= inicioMes)
         .reduce((s, i) => s + (Number(i.valor_unitario) - Number(i.custo_unitario)) * i.quantidade, 0);
-      const lucroServicos = osRows
-        .filter((o) => o.status === "Entregue" && o.data_entrada.slice(0, 10) >= inicioMes)
-        .reduce((s, o) => s + (Number(o.valor_total) - Number(o.valor_pecas)), 0);
+      const entreguesPagas = osRows.filter((o) => o.status === "Entregue" && o.status_pagamento === "Pago");
+      const lucroServicos = entreguesPagas
+        .filter((o) => (o.data_pagamento ?? o.data_entrada).slice(0, 10) >= inicioMes)
+        .reduce((s, o) => s + (Number(o.valor_recebido || o.valor_total) - Number(o.valor_pecas)), 0);
+
+      const futuroOs = osRows.filter(
+        (o) => o.orcamento_aprovado && o.status !== "Entregue" && o.status !== "Cancelada",
+      );
+      const futuroTotal = futuroOs.reduce((s, o) => s + Number(o.valor_total), 0);
+
 
       const vencidas = finRows.filter(
         (f) => f.tipo === "Saída" && f.status !== "Pago" && f.vencimento < hoje,
