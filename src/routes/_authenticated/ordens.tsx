@@ -167,10 +167,20 @@ function OrdensPage() {
 
   const notificar = useServerFn(waNotificarStatus);
   const [whatsOs, setWhatsOs] = useState<OsWhats | null>(null);
+  const [entrega, setEntrega] = useState<{ id: string; numero_os: number; valor: number } | null>(null);
+  const [pagamento, setPagamento] = useState({ forma: "PIX", valor: "0" });
 
   const mudarStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: Status }) => {
-      const { error } = await supabase.from("ordens_servico").update({ status }).eq("id", id);
+    mutationFn: async ({
+      id,
+      status,
+      extra,
+    }: {
+      id: string;
+      status: Status;
+      extra?: { status_pagamento: string; forma_pagamento: string; valor_recebido: number };
+    }) => {
+      const { error } = await supabase.from("ordens_servico").update({ status, ...(extra ?? {}) }).eq("id", id);
       if (error) throw error;
       // Notificação automática ao cliente (silenciosa quando o WhatsApp está desconectado).
       const aviso = await notificar({ data: { ordem_servico_id: id } }).catch(() => null);
@@ -182,14 +192,30 @@ function OrdensPage() {
       });
       qc.invalidateQueries({ queryKey: ["ordens"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["relatorios"] });
+      qc.invalidateQueries({ queryKey: ["financeiro"] });
     },
   });
+
+  function trocarStatus(o: { id: string; numero_os: number; valor_total: number | string }, status: Status) {
+    if (status === "Entregue") {
+      setPagamento({ forma: "PIX", valor: String(Number(o.valor_total)) });
+      setEntrega({ id: o.id, numero_os: o.numero_os, valor: Number(o.valor_total) });
+      return;
+    }
+    mudarStatus.mutate({
+      id: o.id,
+      status,
+      extra: { status_pagamento: "Pendente", forma_pagamento: "", valor_recebido: 0 },
+    });
+  }
 
   const lista = ordens.filter((o) => {
     const okStatus = filtro === "todas" || o.status === filtro;
     const texto = `${o.numero_os} ${o.clientes?.nome ?? ""} ${o.aparelhos?.modelo ?? ""} ${o.defeito}`.toLowerCase();
     return okStatus && texto.includes(busca.toLowerCase());
   });
+
 
   function imprimir(os: (typeof ordens)[number]) {
     const w = window.open("", "_blank", "width=800,height=900");
