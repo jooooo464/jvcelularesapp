@@ -9,6 +9,7 @@ import { PortalTimeline } from "@/components/PortalTimeline";
 import { portalOrdem, portalResponderOrcamento } from "@/lib/portal.functions";
 import { brl, dateBR, dateTimeBR } from "@/lib/format";
 import { mascararImei } from "@/lib/portal-etapas";
+import { CHECKLIST_CAMPOS } from "@/lib/inspecao";
 
 export const Route = createFileRoute("/portal/$token")({
   head: () => ({
@@ -76,6 +77,13 @@ function PortalOrdemPage() {
 
   const os = data.os as any;
   const atualizacoes = data.atualizacoes as any[];
+  const inspecao = (data as any).inspecao as {
+    checklist: Record<string, any> | null;
+    tecnico: string | null;
+    acessorios: { nome_acessorio: string; entregue: boolean; observacao: string | null }[];
+    galeria: { id: string; etapa: string; descricao: string | null; created_at: string; src: string }[];
+  };
+  const temInspecao = !!inspecao?.checklist || (inspecao?.galeria?.length ?? 0) > 0;
   const total = Number(os.valor_servico) + Number(os.valor_pecas) - Number(os.desconto);
 
   return (
@@ -141,6 +149,87 @@ function PortalOrdemPage() {
         <h2 className="mb-4 font-display text-lg font-semibold">Etapas do reparo</h2>
         <PortalTimeline status={os.status} orcamento={os.orcamento_status} />
       </section>
+
+      {temInspecao && (
+        <section className="surface space-y-5 p-5">
+          <div>
+            <h2 className="font-display text-lg font-semibold">Como seu aparelho chegou à assistência</h2>
+            <p className="text-sm text-muted-foreground">
+              Inspeção inicial{inspecao.checklist?.inspecionado_em ? ` em ${dateTimeBR(inspecao.checklist.inspecionado_em)}` : ""}
+              {inspecao.tecnico ? ` · Técnico ${inspecao.tecnico}` : ""}
+            </p>
+          </div>
+
+          {inspecao.galeria.length > 0 && (
+            <div>
+              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                <Camera className="size-4" /> Fotos do recebimento e do reparo
+              </h3>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {inspecao.galeria.map((f) => (
+                  <figure key={f.id} className="overflow-hidden rounded-lg border border-border">
+                    <a href={f.src} target="_blank" rel="noreferrer">
+                      <img
+                        src={f.src}
+                        alt={f.descricao ?? `Foto do aparelho — ${f.etapa}`}
+                        loading="lazy"
+                        className="aspect-square w-full cursor-zoom-in object-cover"
+                      />
+                    </a>
+                    <figcaption className="p-2 text-xs text-muted-foreground">
+                      <span className="block font-medium text-foreground">{f.etapa}</span>
+                      {f.descricao}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {inspecao.checklist && (
+            <div>
+              <h3 className="mb-2 text-sm font-semibold">Estado do aparelho na entrada</h3>
+              <ul className="grid gap-1 text-sm sm:grid-cols-2">
+                {CHECKLIST_CAMPOS.map((c) => (
+                  <li key={c.key} className="flex items-center gap-2">
+                    <span className={inspecao.checklist![c.key] ? "text-success" : "text-muted-foreground"}>
+                      {inspecao.checklist![c.key] ? "✔" : "—"}
+                    </span>
+                    <span className={inspecao.checklist![c.key] ? "" : "text-muted-foreground"}>{c.label}</span>
+                  </li>
+                ))}
+              </ul>
+              {inspecao.checklist.outro && (
+                <p className="mt-2 text-sm">Outro: {inspecao.checklist.outro}</p>
+              )}
+            </div>
+          )}
+
+          {inspecao.acessorios.length > 0 && (
+            <div>
+              <h3 className="mb-2 text-sm font-semibold">Acessórios entregues</h3>
+              <ul className="grid gap-1 text-sm sm:grid-cols-2">
+                {inspecao.acessorios.map((a) => (
+                  <li key={a.nome_acessorio} className="flex items-center gap-2">
+                    <span className={a.entregue ? "text-success" : "text-muted-foreground"}>{a.entregue ? "✔" : "✕"}</span>
+                    <span className={a.entregue ? "" : "text-muted-foreground"}>
+                      {a.nome_acessorio}
+                      {a.entregue ? "" : " (não entregue)"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {inspecao.checklist?.observacoes && (
+            <div>
+              <h3 className="mb-1 text-sm font-semibold">Observações da entrada</h3>
+              <p className="whitespace-pre-line text-sm text-muted-foreground">{inspecao.checklist.observacoes}</p>
+            </div>
+          )}
+        </section>
+      )}
 
       <section className="surface p-5">
         <h2 className="mb-4 font-display text-lg font-semibold">Histórico de atualizações</h2>
