@@ -38,6 +38,9 @@ const CORES = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--char
 
 function RelatoriosPage() {
   const [dias, setDias] = useState("30");
+  const [fTecnico, setFTecnico] = useState("todos");
+  const [fCliente, setFCliente] = useState("todos");
+  const [fStatus, setFStatus] = useState("todos");
 
   const desde = useMemo(() => {
     const d = new Date();
@@ -54,7 +57,13 @@ function RelatoriosPage() {
           .from("itens_venda")
           .select("quantidade,valor_unitario,custo_unitario,produtos(nome),vendas!inner(created_at)")
           .gte("vendas.created_at", desde),
-        supabase.from("ordens_servico").select("status,valor_total,valor_pecas,data_entrada").eq("deleted", false).gte("data_entrada", desde.slice(0, 10)),
+        supabase
+          .from("ordens_servico")
+          .select(
+            "id,numero_os,status,valor_total,valor_pecas,valor_recebido,status_pagamento,orcamento_aprovado,forma_pagamento,data_entrada,data_entrega,data_pagamento,tecnico_id,cliente_id,clientes(nome),profiles(nome)",
+          )
+          .eq("deleted", false)
+          .gte("data_entrada", desde.slice(0, 10)),
       ]);
       return { vendas: vendas.data ?? [], itens: itens.data ?? [], ordens: ordens.data ?? [] };
     },
@@ -62,15 +71,44 @@ function RelatoriosPage() {
 
   const vendas = data?.vendas ?? [];
   const itens = data?.itens ?? [];
-  const ordens = data?.ordens ?? [];
+  const todasOrdens = data?.ordens ?? [];
+
+  const ordens = todasOrdens.filter(
+    (o) =>
+      (fTecnico === "todos" || o.tecnico_id === fTecnico) &&
+      (fCliente === "todos" || o.cliente_id === fCliente) &&
+      (fStatus === "todos" || o.status === fStatus),
+  );
+
+  const opcoesTecnicos = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const o of todasOrdens) if (o.tecnico_id) m.set(o.tecnico_id, o.profiles?.nome ?? "—");
+    return [...m.entries()];
+  }, [todasOrdens]);
+
+  const opcoesClientes = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const o of todasOrdens) if (o.cliente_id) m.set(o.cliente_id, o.clientes?.nome ?? "—");
+    return [...m.entries()];
+  }, [todasOrdens]);
+
+  const opcoesStatus = useMemo(() => [...new Set(todasOrdens.map((o) => o.status))], [todasOrdens]);
+
+  const ordensReais = ordens.filter((o) => o.status === "Entregue" && o.status_pagamento === "Pago");
+  const ordensFuturas = ordens.filter(
+    (o) => o.orcamento_aprovado && o.status !== "Entregue" && o.status !== "Cancelada",
+  );
 
   const faturamentoVendas = vendas.reduce((s, v) => s + Number(v.valor_total), 0);
-  const faturamentoOS = ordens.reduce((s, o) => s + Number(o.valor_total), 0);
+  const faturamentoOS = ordensReais.reduce((s, o) => s + Number(o.valor_recebido || o.valor_total), 0);
+  const futuroTotal = ordensFuturas.reduce((s, o) => s + Number(o.valor_total), 0);
+  const ticketFuturo = ordensFuturas.length ? futuroTotal / ordensFuturas.length : 0;
   const custoVendas = itens.reduce((s, i) => s + Number(i.custo_unitario) * i.quantidade, 0);
-  const custoOS = ordens.reduce((s, o) => s + Number(o.valor_pecas), 0);
+  const custoOS = ordensReais.reduce((s, o) => s + Number(o.valor_pecas), 0);
   const faturamento = faturamentoVendas + faturamentoOS;
   const lucro = faturamento - custoVendas - custoOS;
   const margem = faturamento ? (lucro / faturamento) * 100 : 0;
+
 
   const topProdutos = useMemo(() => {
     const mapa = new Map<string, { nome: string; qtd: number; total: number }>();
@@ -101,10 +139,13 @@ function RelatoriosPage() {
       ["Indicador", "Valor"],
       ["Período (dias)", dias],
       ["Faturamento vendas", faturamentoVendas.toFixed(2)],
-      ["Faturamento serviços", faturamentoOS.toFixed(2)],
+      ["Faturamento serviços (entregues e pagos)", faturamentoOS.toFixed(2)],
+      ["Futuro faturamento (previsto)", futuroTotal.toFixed(2)],
+      ["Serviços aguardando conclusão", String(ordensFuturas.length)],
       ["Custo total", (custoVendas + custoOS).toFixed(2)],
       ["Lucro bruto", lucro.toFixed(2)],
       ["Margem (%)", margem.toFixed(2)],
+
       [],
       ["Produto", "Quantidade", "Total"],
       ...topProdutos.map((p) => [p.nome, String(p.qtd), p.total.toFixed(2)]),
@@ -120,7 +161,7 @@ function RelatoriosPage() {
 
   return (
     <div>
-      <PageHeader title="Relatórios" description="Desempenho comercial e operacional por período.">
+      <PageHeader title="Relatórios" description="Faturamento real e previsão de receita por período.">
         <Select value={dias} onValueChange={setDias}>
           <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -130,15 +171,36 @@ function RelatoriosPage() {
             <SelectItem value="365">Últimos 12 meses</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={fTecnico} onValueChange={setFTecnico}>
+          <SelectTrigger className="w-40"><SelectValue placeholder="Técnico" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os técnicos</SelectItem>
+            {opcoesTecnicos.map(([id, nome]) => <SelectItem key={id} value={id}>{nome}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={fCliente} onValueChange={setFCliente}>
+          <SelectTrigger className="w-40"><SelectValue placeholder="Cliente" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os clientes</SelectItem>
+            {opcoesClientes.map(([id, nome]) => <SelectItem key={id} value={id}>{nome}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={fStatus} onValueChange={setFStatus}>
+          <SelectTrigger className="w-40"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os status</SelectItem>
+            {opcoesStatus.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
         <Button variant="outline" onClick={exportarCSV}>
           <Download className="size-4" /> Exportar CSV
         </Button>
       </PageHeader>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Faturamento total" value={brl(faturamento)} icon={TrendingUp} tone="brand" />
+        <StatCard label="Faturamento real" value={brl(faturamento)} hint="Somente valores recebidos" icon={TrendingUp} tone="brand" />
         <StatCard label="Vendas (PDV)" value={brl(faturamentoVendas)} icon={ShoppingBag} hint={`${vendas.length} venda(s)`} />
-        <StatCard label="Serviços (OS)" value={brl(faturamentoOS)} icon={Wrench} hint={`${ordens.length} ordem(ns)`} />
+        <StatCard label="Serviços entregues e pagos" value={brl(faturamentoOS)} icon={Wrench} hint={`${ordensReais.length} ordem(ns)`} />
         <StatCard
           label="Lucro bruto"
           value={brl(lucro)}
@@ -148,8 +210,83 @@ function RelatoriosPage() {
         />
       </div>
 
+      <div className="mb-6 grid gap-6 lg:grid-cols-2">
+        <div className="surface overflow-hidden">
+          <div className="px-5 pt-5">
+            <h2 className="text-sm font-semibold">Faturamento real — serviços entregues e pagos</h2>
+            <p className="text-xs text-muted-foreground">{ordensReais.length} ordem(ns) · {brl(faturamentoOS)}</p>
+          </div>
+          {ordensReais.length === 0 ? (
+            <div className="p-5"><EmptyState message="Nenhum serviço pago no período." /></div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>OS</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Pagamento</TableHead>
+                  <TableHead>Entrega</TableHead>
+                  <TableHead className="text-right">Recebido</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ordensReais.map((o) => (
+                  <TableRow key={o.id}>
+                    <TableCell className="numeric">#{o.numero_os}</TableCell>
+                    <TableCell>{o.clientes?.nome ?? "—"}</TableCell>
+                    <TableCell>{o.forma_pagamento ?? "—"}</TableCell>
+                    <TableCell className="text-muted-foreground">{dateBR(o.data_entrega)}</TableCell>
+                    <TableCell className="numeric text-right font-medium">
+                      {brl(Number(o.valor_recebido || o.valor_total))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+
+        <div className="surface overflow-hidden border-warning/40">
+          <div className="px-5 pt-5">
+            <h2 className="text-sm font-semibold text-warning">Futuro faturamento — aprovados e não concluídos</h2>
+            <p className="text-xs text-muted-foreground">
+              {ordensFuturas.length} serviço(s) · previsto {brl(futuroTotal)} · ticket médio {brl(ticketFuturo)}
+            </p>
+          </div>
+          {ordensFuturas.length === 0 ? (
+            <div className="p-5"><EmptyState message="Nenhum orçamento aprovado em aberto." /></div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>OS</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Técnico</TableHead>
+                  <TableHead className="text-right">Previsto</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ordensFuturas.map((o) => (
+                  <TableRow key={o.id}>
+                    <TableCell className="numeric">#{o.numero_os}</TableCell>
+                    <TableCell>{o.clientes?.nome ?? "—"}</TableCell>
+                    <TableCell>{o.status}</TableCell>
+                    <TableCell className="text-muted-foreground">{o.profiles?.nome ?? "—"}</TableCell>
+                    <TableCell className="numeric text-right font-medium text-warning">
+                      {brl(Number(o.valor_total))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="surface p-5">
+
           <h2 className="mb-4 text-sm font-semibold">Ordens por status</h2>
           {statusOS.length === 0 ? (
             <EmptyState message="Sem ordens no período." />

@@ -48,7 +48,7 @@ function Dashboard() {
 
       const [fin, os, produtos, clientes, itens] = await Promise.all([
         supabase.from("financeiro").select("tipo,valor,vencimento,status,created_at"),
-        supabase.from("ordens_servico").select("status,valor_total,valor_pecas,data_entrada,numero_os,previsao_entrega,clientes(nome)").eq("deleted", false).order("data_entrada", { ascending: false }),
+        supabase.from("ordens_servico").select("id,status,valor_total,valor_pecas,valor_recebido,status_pagamento,orcamento_aprovado,data_entrada,data_pagamento,numero_os,previsao_entrega,clientes(nome)").eq("deleted", false).order("data_entrada", { ascending: false }),
         supabase.from("produtos").select("nome,quantidade,estoque_minimo"),
         supabase.from("clientes").select("id", { count: "exact", head: true }),
         supabase.from("itens_venda").select("quantidade,valor_unitario,custo_unitario,vendas(created_at)"),
@@ -70,9 +70,16 @@ function Dashboard() {
       const lucroProdutos = (itens.data ?? [])
         .filter((i) => (i.vendas?.created_at ?? "").slice(0, 10) >= inicioMes)
         .reduce((s, i) => s + (Number(i.valor_unitario) - Number(i.custo_unitario)) * i.quantidade, 0);
-      const lucroServicos = osRows
-        .filter((o) => o.status === "Entregue" && o.data_entrada.slice(0, 10) >= inicioMes)
-        .reduce((s, o) => s + (Number(o.valor_total) - Number(o.valor_pecas)), 0);
+      const entreguesPagas = osRows.filter((o) => o.status === "Entregue" && o.status_pagamento === "Pago");
+      const lucroServicos = entreguesPagas
+        .filter((o) => (o.data_pagamento ?? o.data_entrada).slice(0, 10) >= inicioMes)
+        .reduce((s, o) => s + (Number(o.valor_recebido || o.valor_total) - Number(o.valor_pecas)), 0);
+
+      const futuroOs = osRows.filter(
+        (o) => o.orcamento_aprovado && o.status !== "Entregue" && o.status !== "Cancelada",
+      );
+      const futuroTotal = futuroOs.reduce((s, o) => s + Number(o.valor_total), 0);
+
 
       const vencidas = finRows.filter(
         (f) => f.tipo === "Saída" && f.status !== "Pago" && f.vencimento < hoje,
@@ -100,9 +107,14 @@ function Dashboard() {
         (s) => ({ status: s, total: osRows.filter((o) => o.status === s).length }),
       );
 
+      const faturamentoRealMes = entreguesPagas
+        .filter((o) => (o.data_pagamento ?? o.data_entrada).slice(0, 10) >= inicioMes)
+        .reduce((s, o) => s + Number(o.valor_recebido || o.valor_total), 0);
+
       return {
         entradasHoje,
         entradasMes,
+        faturamentoRealMes,
         lucroMes: lucroProdutos + lucroServicos - saidasMes,
         emAndamento,
         concluidas,
@@ -112,7 +124,11 @@ function Dashboard() {
         clientes: clientes.count ?? 0,
         serie,
         statusCount,
+        futuroOs,
+        futuroTotal,
+        ticketFuturo: futuroOs.length ? futuroTotal / futuroOs.length : 0,
       };
+
     },
   });
 
@@ -136,14 +152,53 @@ function Dashboard() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Faturamento hoje" value={brl(data?.entradasHoje)} icon={Banknote} tone="brand" />
-        <StatCard label="Faturamento do mês" value={brl(data?.entradasMes)} icon={TrendingUp} tone="success" />
+        <StatCard label="Faturamento do mês" value={brl(data?.entradasMes)} hint="Somente valores recebidos" icon={TrendingUp} tone="success" />
+        <StatCard label="Faturamento real (serviços)" value={brl(data?.faturamentoRealMes)} hint="OS entregues e pagas no mês" icon={CheckCircle2} tone="success" />
         <StatCard label="Lucro do mês" value={brl(data?.lucroMes)} hint="Receitas − custos − despesas" icon={TrendingUp} tone="success" />
         <StatCard label="Ordens em andamento" value={num(data?.emAndamento.length)} icon={Wrench} tone="warning" />
         <StatCard label="Estoque baixo" value={num(data?.estoqueBaixo.length)} hint="Produtos no mínimo" icon={PackageX} tone="warning" />
         <StatCard label="Contas vencidas" value={brl(data?.totalVencidas)} icon={AlertTriangle} tone="danger" />
         <StatCard label="Clientes cadastrados" value={num(data?.clientes)} icon={Users} />
-        <StatCard label="Serviços concluídos" value={num(data?.concluidas)} icon={CheckCircle2} tone="success" />
       </div>
+
+      <section className="mt-6 rounded-xl border border-warning/40 bg-warning/8 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-display text-sm font-semibold text-warning">Futuro faturamento</h2>
+            <p className="text-xs text-muted-foreground">
+              Orçamentos aprovados aguardando entrega e pagamento — previsão, não receita realizada.
+            </p>
+          </div>
+          <div className="flex gap-6">
+            <div>
+              <p className="text-xs text-muted-foreground">Valor previsto</p>
+              <p className="numeric text-xl font-semibold text-warning">{brl(data?.futuroTotal)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Serviços</p>
+              <p className="numeric text-xl font-semibold">{num(data?.futuroOs.length)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Ticket médio</p>
+              <p className="numeric text-xl font-semibold">{brl(data?.ticketFuturo)}</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 space-y-2">
+          {(data?.futuroOs ?? []).slice(0, 6).map((o) => (
+            <div key={o.id} className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5">
+              <span className="numeric text-xs font-semibold text-muted-foreground">#{o.numero_os}</span>
+              <span className="min-w-0 flex-1 truncate text-sm">{o.clientes?.nome ?? "—"}</span>
+              <Badge variant="secondary" className="text-[11px]">{o.status}</Badge>
+              <span className="numeric text-sm font-medium">{brl(Number(o.valor_total))}</span>
+            </div>
+          ))}
+          {data?.futuroOs.length === 0 && (
+            <p className="py-4 text-center text-sm text-muted-foreground">Nenhum orçamento aprovado em aberto.</p>
+          )}
+        </div>
+      </section>
+
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="surface p-5 lg:col-span-2">

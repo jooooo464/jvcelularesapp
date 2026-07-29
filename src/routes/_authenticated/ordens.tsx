@@ -167,10 +167,20 @@ function OrdensPage() {
 
   const notificar = useServerFn(waNotificarStatus);
   const [whatsOs, setWhatsOs] = useState<OsWhats | null>(null);
+  const [entrega, setEntrega] = useState<{ id: string; numero_os: number; valor: number } | null>(null);
+  const [pagamento, setPagamento] = useState({ forma: "PIX", valor: "0" });
 
   const mudarStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: Status }) => {
-      const { error } = await supabase.from("ordens_servico").update({ status }).eq("id", id);
+    mutationFn: async ({
+      id,
+      status,
+      extra,
+    }: {
+      id: string;
+      status: Status;
+      extra?: { status_pagamento: string; forma_pagamento: string; valor_recebido: number };
+    }) => {
+      const { error } = await supabase.from("ordens_servico").update({ status, ...(extra ?? {}) }).eq("id", id);
       if (error) throw error;
       // Notificação automática ao cliente (silenciosa quando o WhatsApp está desconectado).
       const aviso = await notificar({ data: { ordem_servico_id: id } }).catch(() => null);
@@ -182,14 +192,30 @@ function OrdensPage() {
       });
       qc.invalidateQueries({ queryKey: ["ordens"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["relatorios"] });
+      qc.invalidateQueries({ queryKey: ["financeiro"] });
     },
   });
+
+  function trocarStatus(o: { id: string; numero_os: number; valor_total: number | string }, status: Status) {
+    if (status === "Entregue") {
+      setPagamento({ forma: "PIX", valor: String(Number(o.valor_total)) });
+      setEntrega({ id: o.id, numero_os: o.numero_os, valor: Number(o.valor_total) });
+      return;
+    }
+    mudarStatus.mutate({
+      id: o.id,
+      status,
+      extra: { status_pagamento: "Pendente", forma_pagamento: "", valor_recebido: 0 },
+    });
+  }
 
   const lista = ordens.filter((o) => {
     const okStatus = filtro === "todas" || o.status === filtro;
     const texto = `${o.numero_os} ${o.clientes?.nome ?? ""} ${o.aparelhos?.modelo ?? ""} ${o.defeito}`.toLowerCase();
     return okStatus && texto.includes(busca.toLowerCase());
   });
+
 
   function imprimir(os: (typeof ordens)[number]) {
     const w = window.open("", "_blank", "width=800,height=900");
@@ -275,7 +301,7 @@ function OrdensPage() {
                     {o.status === "Cancelada" ? (
                       <Badge variant="destructive" title={o.motivo_cancelamento ?? undefined}>CANCELADA</Badge>
                     ) : (
-                      <Select value={o.status} onValueChange={(v) => mudarStatus.mutate({ id: o.id, status: v as Status })}>
+                      <Select value={o.status} onValueChange={(v) => trocarStatus(o, v as Status)}>
                         <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -284,7 +310,17 @@ function OrdensPage() {
                     )}
                   </TableCell>
                   <TableCell className="hidden text-muted-foreground lg:table-cell">{dateBR(o.previsao_entrega)}</TableCell>
-                  <TableCell className="numeric text-right font-medium">{brl(Number(o.valor_total))}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="numeric font-medium">{brl(Number(o.valor_total))}</div>
+                    {o.status === "Entregue" && o.status_pagamento === "Pago" ? (
+                      <span className="text-[11px] text-success">Recebido · {o.forma_pagamento || "—"}</span>
+                    ) : o.orcamento_aprovado ? (
+                      <span className="text-[11px] text-warning">Futuro faturamento</span>
+                    ) : (
+                      <span className="text-[11px] text-muted-foreground">Sem faturamento</span>
+                    )}
+                  </TableCell>
+
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       <Button
@@ -412,6 +448,71 @@ function OrdensPage() {
       </Dialog>
 
       <PortalShareDialog os={shareOs} open={!!shareOs} onOpenChange={(v) => !v && setShareOs(null)} />
+
+      <Dialog open={!!entrega} onOpenChange={(v) => !v && setEntrega(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirmar entrega e pagamento — OS #{entrega?.numero_os}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              O valor só entra no faturamento real após a confirmação do pagamento recebido.
+            </p>
+            <Field label="Forma de pagamento">
+              <Select value={pagamento.forma} onValueChange={(v) => setPagamento({ ...pagamento, forma: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["PIX", "Dinheiro", "Cartão de débito", "Cartão de crédito", "Transferência"].map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Valor recebido">
+              <Input
+                type="number"
+                step="0.01"
+                value={pagamento.valor}
+                onChange={(e) => setPagamento({ ...pagamento, valor: e.target.value })}
+              />
+            </Field>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (!entrega) return;
+                mudarStatus.mutate({
+                  id: entrega.id,
+                  status: "Entregue",
+                  extra: { status_pagamento: "Pendente", forma_pagamento: "", valor_recebido: 0 },
+                });
+                setEntrega(null);
+              }}
+            >
+              Entregar sem pagamento
+            </Button>
+            <Button
+              onClick={() => {
+                if (!entrega) return;
+                mudarStatus.mutate({
+                  id: entrega.id,
+                  status: "Entregue",
+                  extra: {
+                    status_pagamento: "Pago",
+                    forma_pagamento: pagamento.forma,
+                    valor_recebido: Number(pagamento.valor) || 0,
+                  },
+                });
+                setEntrega(null);
+              }}
+            >
+              Confirmar pagamento
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <OsInspecaoDialog os={inspecaoOs} open={!!inspecaoOs} onOpenChange={(v) => !v && setInspecaoOs(null)} />
       <OsWhatsappDialog os={whatsOs} open={!!whatsOs} onOpenChange={(v) => !v && setWhatsOs(null)} />
       <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />

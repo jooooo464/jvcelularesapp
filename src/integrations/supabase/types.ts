@@ -539,18 +539,22 @@ export type Database = {
           cancelada_por: string | null
           cliente_id: string
           created_at: string
+          data_aprovacao: string | null
           data_entrada: string
           data_entrega: string | null
+          data_pagamento: string | null
           defeito: string
           deleted: boolean
           deleted_at: string | null
           deleted_by: string | null
           desconto: number
           diagnostico: string | null
+          forma_pagamento: string | null
           fotos: string[]
           id: string
           motivo_cancelamento: string | null
           numero_os: number
+          orcamento_aprovado: boolean
           orcamento_dispositivo: string | null
           orcamento_ip: string | null
           orcamento_resposta_em: string | null
@@ -562,8 +566,11 @@ export type Database = {
           previsao_entrega: string | null
           servico_realizado: string | null
           status: Database["public"]["Enums"]["os_status"]
+          status_pagamento: string
           tecnico_id: string | null
           valor_pecas: number
+          valor_previsto: number
+          valor_recebido: number
           valor_servico: number
           valor_total: number
         }
@@ -573,18 +580,22 @@ export type Database = {
           cancelada_por?: string | null
           cliente_id: string
           created_at?: string
+          data_aprovacao?: string | null
           data_entrada?: string
           data_entrega?: string | null
+          data_pagamento?: string | null
           defeito?: string
           deleted?: boolean
           deleted_at?: string | null
           deleted_by?: string | null
           desconto?: number
           diagnostico?: string | null
+          forma_pagamento?: string | null
           fotos?: string[]
           id?: string
           motivo_cancelamento?: string | null
           numero_os?: number
+          orcamento_aprovado?: boolean
           orcamento_dispositivo?: string | null
           orcamento_ip?: string | null
           orcamento_resposta_em?: string | null
@@ -596,8 +607,11 @@ export type Database = {
           previsao_entrega?: string | null
           servico_realizado?: string | null
           status?: Database["public"]["Enums"]["os_status"]
+          status_pagamento?: string
           tecnico_id?: string | null
           valor_pecas?: number
+          valor_previsto?: number
+          valor_recebido?: number
           valor_servico?: number
           valor_total?: number
         }
@@ -607,18 +621,22 @@ export type Database = {
           cancelada_por?: string | null
           cliente_id?: string
           created_at?: string
+          data_aprovacao?: string | null
           data_entrada?: string
           data_entrega?: string | null
+          data_pagamento?: string | null
           defeito?: string
           deleted?: boolean
           deleted_at?: string | null
           deleted_by?: string | null
           desconto?: number
           diagnostico?: string | null
+          forma_pagamento?: string | null
           fotos?: string[]
           id?: string
           motivo_cancelamento?: string | null
           numero_os?: number
+          orcamento_aprovado?: boolean
           orcamento_dispositivo?: string | null
           orcamento_ip?: string | null
           orcamento_resposta_em?: string | null
@@ -630,8 +648,11 @@ export type Database = {
           previsao_entrega?: string | null
           servico_realizado?: string | null
           status?: Database["public"]["Enums"]["os_status"]
+          status_pagamento?: string
           tecnico_id?: string | null
           valor_pecas?: number
+          valor_previsto?: number
+          valor_recebido?: number
           valor_servico?: number
           valor_total?: number
         }
