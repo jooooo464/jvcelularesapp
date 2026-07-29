@@ -582,9 +582,9 @@ export function WhatsappResumo() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard title="Enviadas hoje" value={String(stats.data?.enviadas ?? 0)} icon={Send} />
-      <StatCard title="Recebidas hoje" value={String(stats.data?.recebidas ?? 0)} icon={MessageSquare} />
-      <StatCard title="Conversas ativas" value={String(stats.data?.conversas ?? 0)} icon={Clock} />
+      <StatCard label="Enviadas hoje" value={String(stats.data?.enviadas ?? 0)} icon={Send} />
+      <StatCard label="Recebidas hoje" value={String(stats.data?.recebidas ?? 0)} icon={MessageSquare} />
+      <StatCard label="Conversas ativas" value={String(stats.data?.conversas ?? 0)} icon={Clock} />
       <StatCard
         title="WhatsApp"
         value={info.data?.status === "conectado" ? "Conectado" : info.data?.status === "conectando" ? "Conectando" : "Desconectado"}
