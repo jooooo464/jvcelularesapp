@@ -49,7 +49,7 @@ export function OsInspecaoDialog({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("checklist_aparelho")
-        .select("*, profiles:tecnico_id(nome)")
+        .select("*")
         .eq("ordem_servico_id", os!.id)
         .maybeSingle();
       if (error) throw error;
