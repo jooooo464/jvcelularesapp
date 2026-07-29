@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { brl, dateBR, onlyDigits } from "@/lib/format";
+import { brl, dateBR } from "@/lib/format";
 import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoesDialog";
 import { brandLogoUrl } from "@/components/BrandLogo";
 import { PortalShareDialog, type OsShare } from "@/components/PortalShareDialog";
