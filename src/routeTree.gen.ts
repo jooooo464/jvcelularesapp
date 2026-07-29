@@ -19,6 +19,7 @@ import { Route as AuthenticatedVendasRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
 import { Route as AuthenticatedPdvRouteImport } from './routes/_authenticated/pdv'
 import { Route as AuthenticatedOrdensServicoRouteImport } from './routes/_authenticated/ordens-servico'
+import { Route as AuthenticatedOrdensLixeiraRouteImport } from './routes/_authenticated/ordens-lixeira'
 import { Route as AuthenticatedOrdensRouteImport } from './routes/_authenticated/ordens'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated/financeiro'
 import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticated/estoque'
@@ -76,6 +77,12 @@ const AuthenticatedOrdensServicoRoute =
     path: '/ordens-servico',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOrdensLixeiraRoute =
+  AuthenticatedOrdensLixeiraRouteImport.update({
+    id: '/ordens-lixeira',
+    path: '/ordens-lixeira',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrdensRoute = AuthenticatedOrdensRouteImport.update({
   id: '/ordens',
   path: '/ordens',
@@ -118,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ordens': typeof AuthenticatedOrdensRoute
+  '/ordens-lixeira': typeof AuthenticatedOrdensLixeiraRoute
   '/ordens-servico': typeof AuthenticatedOrdensServicoRoute
   '/pdv': typeof AuthenticatedPdvRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -135,6 +143,7 @@ export interface FileRoutesByTo {
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ordens': typeof AuthenticatedOrdensRoute
+  '/ordens-lixeira': typeof AuthenticatedOrdensLixeiraRoute
   '/ordens-servico': typeof AuthenticatedOrdensServicoRoute
   '/pdv': typeof AuthenticatedPdvRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -154,6 +163,7 @@ export interface FileRoutesById {
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/ordens': typeof AuthenticatedOrdensRoute
+  '/_authenticated/ordens-lixeira': typeof AuthenticatedOrdensLixeiraRoute
   '/_authenticated/ordens-servico': typeof AuthenticatedOrdensServicoRoute
   '/_authenticated/pdv': typeof AuthenticatedPdvRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/estoque'
     | '/financeiro'
     | '/ordens'
+    | '/ordens-lixeira'
     | '/ordens-servico'
     | '/pdv'
     | '/relatorios'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/estoque'
     | '/financeiro'
     | '/ordens'
+    | '/ordens-lixeira'
     | '/ordens-servico'
     | '/pdv'
     | '/relatorios'
@@ -208,6 +220,7 @@ export interface FileRouteTypes {
     | '/_authenticated/estoque'
     | '/_authenticated/financeiro'
     | '/_authenticated/ordens'
+    | '/_authenticated/ordens-lixeira'
     | '/_authenticated/ordens-servico'
     | '/_authenticated/pdv'
     | '/_authenticated/relatorios'
@@ -297,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdensServicoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ordens-lixeira': {
+      id: '/_authenticated/ordens-lixeira'
+      path: '/ordens-lixeira'
+      fullPath: '/ordens-lixeira'
+      preLoaderRoute: typeof AuthenticatedOrdensLixeiraRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ordens': {
       id: '/_authenticated/ordens'
       path: '/ordens'
@@ -349,6 +369,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEstoqueRoute: typeof AuthenticatedEstoqueRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedOrdensRoute: typeof AuthenticatedOrdensRoute
+  AuthenticatedOrdensLixeiraRoute: typeof AuthenticatedOrdensLixeiraRoute
   AuthenticatedOrdensServicoRoute: typeof AuthenticatedOrdensServicoRoute
   AuthenticatedPdvRoute: typeof AuthenticatedPdvRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
@@ -362,6 +383,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEstoqueRoute: AuthenticatedEstoqueRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedOrdensRoute: AuthenticatedOrdensRoute,
+  AuthenticatedOrdensLixeiraRoute: AuthenticatedOrdensLixeiraRoute,
   AuthenticatedOrdensServicoRoute: AuthenticatedOrdensServicoRoute,
   AuthenticatedPdvRoute: AuthenticatedPdvRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search, Printer, MessageCircle, Pencil, Activity, Share2 } from "lucide-react";
+import { Plus, Search, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState } from "@/components/ui-kit";
 import { Field } from "./clientes";
@@ -23,6 +23,9 @@ import { brl, dateBR, onlyDigits } from "@/lib/format";
 import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoesDialog";
 import { brandLogoUrl } from "@/components/BrandLogo";
 import { PortalShareDialog, type OsShare } from "@/components/PortalShareDialog";
+import { OsAcoesMenu } from "@/components/OsAcoesMenu";
+import { useIsAdmin } from "@/lib/auth";
+
 
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
