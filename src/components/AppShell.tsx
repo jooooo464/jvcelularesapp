@@ -100,7 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
-          {NAV.map(({ to, label, icon: Icon }) => {
+          {[...NAV, ...((data?.roles ?? []).includes("administrador") ? NAV_ADMIN : [])].map(({ to, label, icon: Icon }) => {
             const active = pathname === to;
             return (
               <Link
