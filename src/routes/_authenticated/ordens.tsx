@@ -258,12 +258,16 @@ function OrdensPage() {
                     {[o.aparelhos?.marca, o.aparelhos?.modelo].filter(Boolean).join(" ") || "—"}
                   </TableCell>
                   <TableCell>
-                    <Select value={o.status} onValueChange={(v) => mudarStatus.mutate({ id: o.id, status: v as Status })}>
-                      <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    {o.status === "Cancelada" ? (
+                      <Badge variant="destructive" title={o.motivo_cancelamento ?? undefined}>CANCELADA</Badge>
+                    ) : (
+                      <Select value={o.status} onValueChange={(v) => mudarStatus.mutate({ id: o.id, status: v as Status })}>
+                        <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </TableCell>
                   <TableCell className="hidden text-muted-foreground lg:table-cell">{dateBR(o.previsao_entrega)}</TableCell>
                   <TableCell className="numeric text-right font-medium">{brl(Number(o.valor_total))}</TableCell>
