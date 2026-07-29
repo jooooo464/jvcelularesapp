@@ -19,13 +19,16 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { brl, dateBR, onlyDigits } from "@/lib/format";
+import { brl, dateBR } from "@/lib/format";
 import { OsAtualizacoesDialog, type OsPortal } from "@/components/OsAtualizacoesDialog";
 import { brandLogoUrl } from "@/components/BrandLogo";
 import { PortalShareDialog, type OsShare } from "@/components/PortalShareDialog";
 import { OsAcoesMenu } from "@/components/OsAcoesMenu";
 import { OsInspecaoDialog, type OsInspecao } from "@/components/OsInspecaoDialog";
 import { useIsAdmin } from "@/lib/auth";
+import { OsWhatsappDialog, type OsWhats } from "@/components/OsWhatsappDialog";
+import { useServerFn } from "@tanstack/react-start";
+import { waNotificarStatus } from "@/lib/whatsapp.functions";
 
 
 export const Route = createFileRoute("/_authenticated/ordens")({
@@ -162,13 +165,21 @@ function OrdensPage() {
     onError: (e: Error) => toast.error("Erro ao salvar OS", { description: e.message }),
   });
 
+  const notificar = useServerFn(waNotificarStatus);
+  const [whatsOs, setWhatsOs] = useState<OsWhats | null>(null);
+
   const mudarStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Status }) => {
       const { error } = await supabase.from("ordens_servico").update({ status }).eq("id", id);
       if (error) throw error;
+      // Notificação automática ao cliente (silenciosa quando o WhatsApp está desconectado).
+      const aviso = await notificar({ data: { ordem_servico_id: id } }).catch(() => null);
+      return aviso;
     },
-    onSuccess: () => {
-      toast.success("Status atualizado");
+    onSuccess: (aviso) => {
+      toast.success("Status atualizado", {
+        description: aviso?.ok ? "Cliente avisado no WhatsApp." : undefined,
+      });
       qc.invalidateQueries({ queryKey: ["ordens"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
     },
@@ -276,19 +287,21 @@ function OrdensPage() {
                   <TableCell className="numeric text-right font-medium">{brl(Number(o.valor_total))}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      {o.clientes?.whatsapp && (
-                        <Button variant="ghost" size="icon" asChild aria-label="Avisar no WhatsApp">
-                          <a
-                            target="_blank"
-                            rel="noreferrer"
-                            href={`https://wa.me/55${onlyDigits(o.clientes.whatsapp)}?text=${encodeURIComponent(
-                              `Olá ${o.clientes.nome}! Atualização da sua OS #${o.numero_os}: ${o.status}. Valor: ${brl(Number(o.valor_total))}.`,
-                            )}`}
-                          >
-                            <MessageCircle className="size-4" />
-                          </a>
-                        </Button>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Enviar WhatsApp"
+                        onClick={() =>
+                          setWhatsOs({
+                            id: o.id,
+                            numero_os: o.numero_os,
+                            cliente_nome: o.clientes?.nome ?? null,
+                            telefone: o.clientes?.whatsapp ?? null,
+                          })
+                        }
+                      >
+                        <MessageCircle className="size-4" />
+                      </Button>
                       <OsAcoesMenu
                         os={{ id: o.id, numero_os: o.numero_os, status: o.status, fotos: o.fotos }}
                         isAdmin={isAdmin}
@@ -400,6 +413,7 @@ function OrdensPage() {
 
       <PortalShareDialog os={shareOs} open={!!shareOs} onOpenChange={(v) => !v && setShareOs(null)} />
       <OsInspecaoDialog os={inspecaoOs} open={!!inspecaoOs} onOpenChange={(v) => !v && setInspecaoOs(null)} />
+      <OsWhatsappDialog os={whatsOs} open={!!whatsOs} onOpenChange={(v) => !v && setWhatsOs(null)} />
       <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />
     </div>
   );

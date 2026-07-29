@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { StatCard, PageHeader } from "@/components/ui-kit";
 import { brl, num, dateBR, todayISO, startOfMonthISO } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { WhatsappResumo } from "./whatsapp";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -238,6 +239,10 @@ function Dashboard() {
           </div>
         </div>
       </div>
+      <section className="mt-6 space-y-3">
+        <h2 className="font-display text-sm font-semibold">WhatsApp</h2>
+        <WhatsappResumo />
+      </section>
     </div>
   );
 }

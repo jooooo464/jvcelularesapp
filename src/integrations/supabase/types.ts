@@ -862,6 +862,162 @@ export type Database = {
           },
         ]
       }
+      whatsapp_config: {
+        Row: {
+          api_key: string
+          api_url: string
+          auto_enviar: boolean
+          connection_status: string
+          created_at: string
+          id: string
+          instance_name: string
+          last_sync: string | null
+          phone_number: string | null
+          profile_name: string | null
+          profile_picture: string | null
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string
+          api_url?: string
+          auto_enviar?: boolean
+          connection_status?: string
+          created_at?: string
+          id?: string
+          instance_name?: string
+          last_sync?: string | null
+          phone_number?: string | null
+          profile_name?: string | null
+          profile_picture?: string | null
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          api_url?: string
+          auto_enviar?: boolean
+          connection_status?: string
+          created_at?: string
+          id?: string
+          instance_name?: string
+          last_sync?: string | null
+          phone_number?: string | null
+          profile_name?: string | null
+          profile_picture?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_mensagens: {
+        Row: {
+          agendada_para: string | null
+          cliente_id: string | null
+          conteudo: string
+          created_at: string
+          direcao: string
+          erro: string | null
+          evolution_id: string | null
+          id: string
+          lida: boolean
+          media_nome: string | null
+          media_url: string | null
+          ordem_servico_id: string | null
+          status: string
+          telefone: string
+          tipo: string
+          updated_at: string
+          usuario_id: string | null
+          usuario_nome: string | null
+        }
+        Insert: {
+          agendada_para?: string | null
+          cliente_id?: string | null
+          conteudo?: string
+          created_at?: string
+          direcao?: string
+          erro?: string | null
+          evolution_id?: string | null
+          id?: string
+          lida?: boolean
+          media_nome?: string | null
+          media_url?: string | null
+          ordem_servico_id?: string | null
+          status?: string
+          telefone: string
+          tipo?: string
+          updated_at?: string
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Update: {
+          agendada_para?: string | null
+          cliente_id?: string | null
+          conteudo?: string
+          created_at?: string
+          direcao?: string
+          erro?: string | null
+          evolution_id?: string | null
+          id?: string
+          lida?: boolean
+          media_nome?: string | null
+          media_url?: string | null
+          ordem_servico_id?: string | null
+          status?: string
+          telefone?: string
+          tipo?: string
+          updated_at?: string
+          usuario_id?: string | null
+          usuario_nome?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_mensagens_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_mensagens_ordem_servico_id_fkey"
+            columns: ["ordem_servico_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_modelos: {
+        Row: {
+          ativo: boolean
+          chave: string
+          conteudo: string
+          created_at: string
+          evento: string | null
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          chave: string
+          conteudo: string
+          created_at?: string
+          evento?: string | null
+          id?: string
+          nome: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          chave?: string
+          conteudo?: string
+          created_at?: string
+          evento?: string | null
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
