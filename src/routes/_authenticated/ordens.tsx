@@ -296,7 +296,7 @@ function OrdensPage() {
                             id: o.id,
                             numero_os: o.numero_os,
                             cliente_nome: o.clientes?.nome ?? null,
-                            telefone: o.clientes?.whatsapp ?? o.clientes?.telefone ?? null,
+                            telefone: o.clientes?.whatsapp ?? null,
                           })
                         }
                       >

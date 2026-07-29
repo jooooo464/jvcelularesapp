@@ -74,7 +74,7 @@ function WhatsappPage() {
   return (
     <div>
       <PageHeader
-        title="WhatsApp"
+        label="WhatsApp"
         description="Integração com a Evolution API: conexão por QR Code, mensagens automáticas e atendimento."
       />
       <div className="mb-6 flex w-full max-w-md gap-1 rounded-lg bg-muted p-1 text-sm">
@@ -586,7 +586,7 @@ export function WhatsappResumo() {
       <StatCard label="Recebidas hoje" value={String(stats.data?.recebidas ?? 0)} icon={MessageSquare} />
       <StatCard label="Conversas ativas" value={String(stats.data?.conversas ?? 0)} icon={Clock} />
       <StatCard
-        title="WhatsApp"
+        label="WhatsApp"
         value={info.data?.status === "conectado" ? "Conectado" : info.data?.status === "conectando" ? "Conectando" : "Desconectado"}
         icon={QrCode}
       />
