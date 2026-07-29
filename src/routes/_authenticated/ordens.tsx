@@ -287,19 +287,21 @@ function OrdensPage() {
                   <TableCell className="numeric text-right font-medium">{brl(Number(o.valor_total))}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      {o.clientes?.whatsapp && (
-                        <Button variant="ghost" size="icon" asChild aria-label="Avisar no WhatsApp">
-                          <a
-                            target="_blank"
-                            rel="noreferrer"
-                            href={`https://wa.me/55${onlyDigits(o.clientes.whatsapp)}?text=${encodeURIComponent(
-                              `Olá ${o.clientes.nome}! Atualização da sua OS #${o.numero_os}: ${o.status}. Valor: ${brl(Number(o.valor_total))}.`,
-                            )}`}
-                          >
-                            <MessageCircle className="size-4" />
-                          </a>
-                        </Button>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Enviar WhatsApp"
+                        onClick={() =>
+                          setWhatsOs({
+                            id: o.id,
+                            numero_os: o.numero_os,
+                            cliente_nome: o.clientes?.nome ?? null,
+                            telefone: o.clientes?.whatsapp ?? o.clientes?.telefone ?? null,
+                          })
+                        }
+                      >
+                        <MessageCircle className="size-4" />
+                      </Button>
                       <OsAcoesMenu
                         os={{ id: o.id, numero_os: o.numero_os, status: o.status, fotos: o.fotos }}
                         isAdmin={isAdmin}
@@ -411,6 +413,7 @@ function OrdensPage() {
 
       <PortalShareDialog os={shareOs} open={!!shareOs} onOpenChange={(v) => !v && setShareOs(null)} />
       <OsInspecaoDialog os={inspecaoOs} open={!!inspecaoOs} onOpenChange={(v) => !v && setInspecaoOs(null)} />
+      <OsWhatsappDialog os={whatsOs} open={!!whatsOs} onOpenChange={(v) => !v && setWhatsOs(null)} />
       <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />
     </div>
   );
