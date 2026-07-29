@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { MoreVertical, Pencil, Printer, Share2, Activity, Ban, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Printer, Share2, Activity, Ban, Trash2, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,9 +25,10 @@ type Props = {
   onImprimir: () => void;
   onCompartilhar: () => void;
   onAtualizacoes: () => void;
+  onInspecao: () => void;
 };
 
-export function OsAcoesMenu({ os, isAdmin, onEditar, onImprimir, onCompartilhar, onAtualizacoes }: Props) {
+export function OsAcoesMenu({ os, isAdmin, onEditar, onImprimir, onCompartilhar, onAtualizacoes, onInspecao }: Props) {
   const qc = useQueryClient();
   const [cancelOpen, setCancelOpen] = useState(false);
   const [delOpen, setDelOpen] = useState(false);
@@ -77,6 +78,9 @@ export function OsAcoesMenu({ os, isAdmin, onEditar, onImprimir, onCompartilhar,
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuItem onClick={onEditar}>
             <Pencil className="size-4" /> Editar ordem de serviço
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onInspecao}>
+            <ClipboardCheck className="size-4" /> Inspeção do aparelho
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onImprimir}>
             <Printer className="size-4" /> Imprimir / Gerar PDF

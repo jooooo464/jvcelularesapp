@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      acessorios_entregues: {
+        Row: {
+          created_at: string
+          entregue: boolean
+          id: string
+          nome_acessorio: string
+          observacao: string | null
+          ordem_servico_id: string
+        }
+        Insert: {
+          created_at?: string
+          entregue?: boolean
+          id?: string
+          nome_acessorio: string
+          observacao?: string | null
+          ordem_servico_id: string
+        }
+        Update: {
+          created_at?: string
+          entregue?: boolean
+          id?: string
+          nome_acessorio?: string
+          observacao?: string | null
+          ordem_servico_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acessorios_entregues_ordem_servico_id_fkey"
+            columns: ["ordem_servico_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       aparelhos: {
         Row: {
           cliente_id: string
@@ -166,6 +201,104 @@ export type Database = {
         }
         Relationships: []
       }
+      checklist_aparelho: {
+        Row: {
+          alto_falante_defeito: boolean
+          aparelho_molhado: boolean
+          arranhoes: boolean
+          biometria_funcionando: boolean
+          botoes_danificados: boolean
+          camera_danificada: boolean
+          carcaca_amassada: boolean
+          conector_defeito: boolean
+          created_at: string
+          faceid_funcionando: boolean
+          id: string
+          inspecionado_em: string
+          lcd_funcionando: boolean
+          liga_normalmente: boolean
+          marcas_queda: boolean
+          microfone_defeito: boolean
+          nao_liga: boolean
+          observacoes: string | null
+          ordem_servico_id: string
+          outro: string | null
+          oxidacao: boolean
+          reiniciando: boolean
+          tampa_quebrada: boolean
+          tecnico_id: string | null
+          tela_quebrada: boolean
+          touch_funcionando: boolean
+          updated_at: string
+        }
+        Insert: {
+          alto_falante_defeito?: boolean
+          aparelho_molhado?: boolean
+          arranhoes?: boolean
+          biometria_funcionando?: boolean
+          botoes_danificados?: boolean
+          camera_danificada?: boolean
+          carcaca_amassada?: boolean
+          conector_defeito?: boolean
+          created_at?: string
+          faceid_funcionando?: boolean
+          id?: string
+          inspecionado_em?: string
+          lcd_funcionando?: boolean
+          liga_normalmente?: boolean
+          marcas_queda?: boolean
+          microfone_defeito?: boolean
+          nao_liga?: boolean
+          observacoes?: string | null
+          ordem_servico_id: string
+          outro?: string | null
+          oxidacao?: boolean
+          reiniciando?: boolean
+          tampa_quebrada?: boolean
+          tecnico_id?: string | null
+          tela_quebrada?: boolean
+          touch_funcionando?: boolean
+          updated_at?: string
+        }
+        Update: {
+          alto_falante_defeito?: boolean
+          aparelho_molhado?: boolean
+          arranhoes?: boolean
+          biometria_funcionando?: boolean
+          botoes_danificados?: boolean
+          camera_danificada?: boolean
+          carcaca_amassada?: boolean
+          conector_defeito?: boolean
+          created_at?: string
+          faceid_funcionando?: boolean
+          id?: string
+          inspecionado_em?: string
+          lcd_funcionando?: boolean
+          liga_normalmente?: boolean
+          marcas_queda?: boolean
+          microfone_defeito?: boolean
+          nao_liga?: boolean
+          observacoes?: string | null
+          ordem_servico_id?: string
+          outro?: string | null
+          oxidacao?: boolean
+          reiniciando?: boolean
+          tampa_quebrada?: boolean
+          tecnico_id?: string | null
+          tela_quebrada?: boolean
+          touch_funcionando?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_aparelho_ordem_servico_id_fkey"
+            columns: ["ordem_servico_id"]
+            isOneToOne: true
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           cidade: string | null
@@ -288,6 +421,44 @@ export type Database = {
           telefone?: string | null
         }
         Relationships: []
+      }
+      fotos_ordem_servico: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          enviado_por: string | null
+          etapa: string
+          id: string
+          ordem_servico_id: string
+          url_foto: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          enviado_por?: string | null
+          etapa?: string
+          id?: string
+          ordem_servico_id: string
+          url_foto: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          enviado_por?: string | null
+          etapa?: string
+          id?: string
+          ordem_servico_id?: string
+          url_foto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fotos_ordem_servico_ordem_servico_id_fkey"
+            columns: ["ordem_servico_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       itens_venda: {
         Row: {

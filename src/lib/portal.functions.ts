@@ -98,7 +98,47 @@ export const portalOrdem = createServerFn({ method: "POST" })
       Boolean,
     ) as string[];
 
-    return { ok: true as const, os: { ...os, fotos }, atualizacoes };
+    const [{ data: checklist }, { data: acessorios }, { data: fotosOs }] = await Promise.all([
+      db.from("checklist_aparelho").select("*").eq("ordem_servico_id", os.id).maybeSingle(),
+      db
+        .from("acessorios_entregues")
+        .select("nome_acessorio, entregue, observacao")
+        .eq("ordem_servico_id", os.id)
+        .order("created_at"),
+      db
+        .from("fotos_ordem_servico")
+        .select("id, etapa, url_foto, descricao, created_at")
+        .eq("ordem_servico_id", os.id)
+        .order("created_at", { ascending: true }),
+    ]);
+
+    let tecnicoInspecao: string | null = null;
+    if (checklist?.tecnico_id) {
+      const { data: p } = await db.from("profiles").select("nome").eq("id", checklist.tecnico_id).maybeSingle();
+      tecnicoInspecao = p?.nome ?? null;
+    }
+
+    const galeria = await Promise.all(
+      (fotosOs ?? []).map(async (f) => ({
+        id: f.id,
+        etapa: f.etapa,
+        descricao: f.descricao,
+        created_at: f.created_at,
+        src: await signPhoto(db, f.url_foto),
+      })),
+    );
+
+    return {
+      ok: true as const,
+      os: { ...os, fotos },
+      atualizacoes,
+      inspecao: {
+        checklist: checklist ?? null,
+        tecnico: tecnicoInspecao,
+        acessorios: acessorios ?? [],
+        galeria: galeria.filter((g) => g.src),
+      },
+    };
   });
 
 /** Aprovação ou recusa do orçamento pelo cliente. */
