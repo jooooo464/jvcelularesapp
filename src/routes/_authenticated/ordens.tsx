@@ -26,6 +26,9 @@ import { PortalShareDialog, type OsShare } from "@/components/PortalShareDialog"
 import { OsAcoesMenu } from "@/components/OsAcoesMenu";
 import { OsInspecaoDialog, type OsInspecao } from "@/components/OsInspecaoDialog";
 import { useIsAdmin } from "@/lib/auth";
+import { OsWhatsappDialog, type OsWhats } from "@/components/OsWhatsappDialog";
+import { useServerFn } from "@tanstack/react-start";
+import { waNotificarStatus } from "@/lib/whatsapp.functions";
 
 
 export const Route = createFileRoute("/_authenticated/ordens")({
@@ -162,13 +165,21 @@ function OrdensPage() {
     onError: (e: Error) => toast.error("Erro ao salvar OS", { description: e.message }),
   });
 
+  const notificar = useServerFn(waNotificarStatus);
+  const [whatsOs, setWhatsOs] = useState<OsWhats | null>(null);
+
   const mudarStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Status }) => {
       const { error } = await supabase.from("ordens_servico").update({ status }).eq("id", id);
       if (error) throw error;
+      // Notificação automática ao cliente (silenciosa quando o WhatsApp está desconectado).
+      const aviso = await notificar({ data: { ordem_servico_id: id } }).catch(() => null);
+      return aviso;
     },
-    onSuccess: () => {
-      toast.success("Status atualizado");
+    onSuccess: (aviso) => {
+      toast.success("Status atualizado", {
+        description: aviso?.ok ? "Cliente avisado no WhatsApp." : undefined,
+      });
       qc.invalidateQueries({ queryKey: ["ordens"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
     },

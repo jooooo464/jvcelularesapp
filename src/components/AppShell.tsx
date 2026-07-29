@@ -9,6 +9,7 @@ import {
   Wallet,
   BarChart3,
   Settings,
+  MessageCircle,
   Trash2,
   Moon,
   Sun,
@@ -34,6 +35,7 @@ const NAV = [
   { to: "/pdv", label: "PDV", icon: ShoppingCart },
   { to: "/financeiro", label: "Financeiro", icon: Wallet },
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { to: "/whatsapp", label: "WhatsApp", icon: MessageCircle },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
 
