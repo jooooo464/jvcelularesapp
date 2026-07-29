@@ -1023,7 +1023,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_staff: { Args: never; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       app_role: "administrador" | "tecnico" | "vendedor" | "financeiro"
