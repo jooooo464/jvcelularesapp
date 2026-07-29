@@ -38,6 +38,9 @@ const CORES = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--char
 
 function RelatoriosPage() {
   const [dias, setDias] = useState("30");
+  const [fTecnico, setFTecnico] = useState("todos");
+  const [fCliente, setFCliente] = useState("todos");
+  const [fStatus, setFStatus] = useState("todos");
 
   const desde = useMemo(() => {
     const d = new Date();
@@ -54,7 +57,13 @@ function RelatoriosPage() {
           .from("itens_venda")
           .select("quantidade,valor_unitario,custo_unitario,produtos(nome),vendas!inner(created_at)")
           .gte("vendas.created_at", desde),
-        supabase.from("ordens_servico").select("status,valor_total,valor_pecas,data_entrada").eq("deleted", false).gte("data_entrada", desde.slice(0, 10)),
+        supabase
+          .from("ordens_servico")
+          .select(
+            "id,numero_os,status,valor_total,valor_pecas,valor_recebido,status_pagamento,orcamento_aprovado,forma_pagamento,data_entrada,data_entrega,data_pagamento,tecnico_id,cliente_id,clientes(nome),profiles(nome)",
+          )
+          .eq("deleted", false)
+          .gte("data_entrada", desde.slice(0, 10)),
       ]);
       return { vendas: vendas.data ?? [], itens: itens.data ?? [], ordens: ordens.data ?? [] };
     },
@@ -62,15 +71,44 @@ function RelatoriosPage() {
 
   const vendas = data?.vendas ?? [];
   const itens = data?.itens ?? [];
-  const ordens = data?.ordens ?? [];
+  const todasOrdens = data?.ordens ?? [];
+
+  const ordens = todasOrdens.filter(
+    (o) =>
+      (fTecnico === "todos" || o.tecnico_id === fTecnico) &&
+      (fCliente === "todos" || o.cliente_id === fCliente) &&
+      (fStatus === "todos" || o.status === fStatus),
+  );
+
+  const opcoesTecnicos = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const o of todasOrdens) if (o.tecnico_id) m.set(o.tecnico_id, o.profiles?.nome ?? "—");
+    return [...m.entries()];
+  }, [todasOrdens]);
+
+  const opcoesClientes = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const o of todasOrdens) if (o.cliente_id) m.set(o.cliente_id, o.clientes?.nome ?? "—");
+    return [...m.entries()];
+  }, [todasOrdens]);
+
+  const opcoesStatus = useMemo(() => [...new Set(todasOrdens.map((o) => o.status))], [todasOrdens]);
+
+  const ordensReais = ordens.filter((o) => o.status === "Entregue" && o.status_pagamento === "Pago");
+  const ordensFuturas = ordens.filter(
+    (o) => o.orcamento_aprovado && o.status !== "Entregue" && o.status !== "Cancelada",
+  );
 
   const faturamentoVendas = vendas.reduce((s, v) => s + Number(v.valor_total), 0);
-  const faturamentoOS = ordens.reduce((s, o) => s + Number(o.valor_total), 0);
+  const faturamentoOS = ordensReais.reduce((s, o) => s + Number(o.valor_recebido || o.valor_total), 0);
+  const futuroTotal = ordensFuturas.reduce((s, o) => s + Number(o.valor_total), 0);
+  const ticketFuturo = ordensFuturas.length ? futuroTotal / ordensFuturas.length : 0;
   const custoVendas = itens.reduce((s, i) => s + Number(i.custo_unitario) * i.quantidade, 0);
-  const custoOS = ordens.reduce((s, o) => s + Number(o.valor_pecas), 0);
+  const custoOS = ordensReais.reduce((s, o) => s + Number(o.valor_pecas), 0);
   const faturamento = faturamentoVendas + faturamentoOS;
   const lucro = faturamento - custoVendas - custoOS;
   const margem = faturamento ? (lucro / faturamento) * 100 : 0;
+
 
   const topProdutos = useMemo(() => {
     const mapa = new Map<string, { nome: string; qtd: number; total: number }>();
