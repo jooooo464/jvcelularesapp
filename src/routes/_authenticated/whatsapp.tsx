@@ -74,7 +74,7 @@ function WhatsappPage() {
   return (
     <div>
       <PageHeader
-        label="WhatsApp"
+        title="WhatsApp"
         description="Integração com a Evolution API: conexão por QR Code, mensagens automáticas e atendimento."
       />
       <div className="mb-6 flex w-full max-w-md gap-1 rounded-lg bg-muted p-1 text-sm">
