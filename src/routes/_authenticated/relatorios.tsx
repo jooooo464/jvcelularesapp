@@ -54,7 +54,7 @@ function RelatoriosPage() {
           .from("itens_venda")
           .select("quantidade,valor_unitario,custo_unitario,produtos(nome),vendas!inner(created_at)")
           .gte("vendas.created_at", desde),
-        supabase.from("ordens_servico").select("status,valor_total,valor_pecas,data_entrada").gte("data_entrada", desde.slice(0, 10)),
+        supabase.from("ordens_servico").select("status,valor_total,valor_pecas,data_entrada").eq("deleted", false).gte("data_entrada", desde.slice(0, 10)),
       ]);
       return { vendas: vendas.data ?? [], itens: itens.data ?? [], ordens: ordens.data ?? [] };
     },

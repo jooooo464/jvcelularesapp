@@ -274,6 +274,7 @@ function HistoricoCliente({ clienteId }: { clienteId: string }) {
           .from("ordens_servico")
           .select("numero_os,status,valor_total,data_entrada")
           .eq("cliente_id", clienteId)
+          .eq("deleted", false)
           .order("data_entrada", { ascending: false }),
       ]);
       return { aparelhos: ap.data ?? [], ordens: os.data ?? [] };

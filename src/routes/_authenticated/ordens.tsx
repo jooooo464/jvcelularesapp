@@ -226,6 +226,7 @@ function OrdensPage() {
           <SelectContent>
             <SelectItem value="todas">Todos os status</SelectItem>
             {STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            <SelectItem value="Cancelada">Cancelada</SelectItem>
           </SelectContent>
         </Select>
         <Button onClick={() => { setEditId(null); setF({ ...vazio }); setOpen(true); }}>
