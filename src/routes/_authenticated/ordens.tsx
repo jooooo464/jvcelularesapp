@@ -280,30 +280,13 @@ function OrdensPage() {
                           </a>
                         </Button>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Compartilhar portal do cliente"
-                        onClick={() => setShareOs(o as unknown as OsShare)}
-                      >
-                        <Share2 className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Atualizações do portal"
-                        onClick={() => setPortalOs(o as unknown as OsPortal)}
-                      >
-                        <Activity className="size-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" aria-label="Imprimir" onClick={() => imprimir(o)}>
-                        <Printer className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Editar"
-                        onClick={() => {
+                      <OsAcoesMenu
+                        os={{ id: o.id, numero_os: o.numero_os, status: o.status, fotos: o.fotos }}
+                        isAdmin={isAdmin}
+                        onCompartilhar={() => setShareOs(o as unknown as OsShare)}
+                        onAtualizacoes={() => setPortalOs(o as unknown as OsPortal)}
+                        onImprimir={() => imprimir(o)}
+                        onEditar={() => {
                           setEditId(o.id);
                           setF({
                             cliente_id: o.cliente_id,
@@ -324,9 +307,8 @@ function OrdensPage() {
                           });
                           setOpen(true);
                         }}
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
+                      />
+
                     </div>
                   </TableCell>
                 </TableRow>
