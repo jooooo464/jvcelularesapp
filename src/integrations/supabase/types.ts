@@ -141,6 +141,44 @@ export type Database = {
           },
         ]
       }
+      auditoria_compras: {
+        Row: {
+          acao: string
+          compra_id: string | null
+          created_at: string | null
+          dados_anteriores: Json | null
+          dados_novos: Json | null
+          id: string
+          usuario_id: string | null
+        }
+        Insert: {
+          acao: string
+          compra_id?: string | null
+          created_at?: string | null
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          id?: string
+          usuario_id?: string | null
+        }
+        Update: {
+          acao?: string
+          compra_id?: string | null
+          created_at?: string | null
+          dados_anteriores?: Json | null
+          dados_novos?: Json | null
+          id?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auditoria_compras_compra_id_fkey"
+            columns: ["compra_id"]
+            isOneToOne: false
+            referencedRelation: "compras_celulares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       auditoria_os: {
         Row: {
           acao: string
@@ -340,6 +378,221 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: []
+      }
+      compras_celulares: {
+        Row: {
+          armazenamento: string | null
+          cliente_venda_id: string | null
+          cor: string | null
+          created_at: string | null
+          created_by: string | null
+          data_compra: string | null
+          data_venda: string | null
+          estado_geral: string | null
+          forma_pagamento: string | null
+          id: string
+          imei1: string | null
+          imei2: string | null
+          marca: string
+          modelo: string
+          observacoes: string | null
+          serial_number: string | null
+          status: Database["public"]["Enums"]["status_compra"] | null
+          updated_at: string | null
+          valor_compra: number
+          valor_venda: number | null
+          vendedor_bairro: string | null
+          vendedor_cep: string | null
+          vendedor_cidade: string | null
+          vendedor_complemento: string | null
+          vendedor_cpf: string | null
+          vendedor_endereco: string | null
+          vendedor_estado: string | null
+          vendedor_nome: string
+          vendedor_numero: string | null
+          vendedor_telefone: string | null
+          vendedor_whatsapp: string | null
+        }
+        Insert: {
+          armazenamento?: string | null
+          cliente_venda_id?: string | null
+          cor?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          data_compra?: string | null
+          data_venda?: string | null
+          estado_geral?: string | null
+          forma_pagamento?: string | null
+          id?: string
+          imei1?: string | null
+          imei2?: string | null
+          marca: string
+          modelo: string
+          observacoes?: string | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["status_compra"] | null
+          updated_at?: string | null
+          valor_compra?: number
+          valor_venda?: number | null
+          vendedor_bairro?: string | null
+          vendedor_cep?: string | null
+          vendedor_cidade?: string | null
+          vendedor_complemento?: string | null
+          vendedor_cpf?: string | null
+          vendedor_endereco?: string | null
+          vendedor_estado?: string | null
+          vendedor_nome: string
+          vendedor_numero?: string | null
+          vendedor_telefone?: string | null
+          vendedor_whatsapp?: string | null
+        }
+        Update: {
+          armazenamento?: string | null
+          cliente_venda_id?: string | null
+          cor?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          data_compra?: string | null
+          data_venda?: string | null
+          estado_geral?: string | null
+          forma_pagamento?: string | null
+          id?: string
+          imei1?: string | null
+          imei2?: string | null
+          marca?: string
+          modelo?: string
+          observacoes?: string | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["status_compra"] | null
+          updated_at?: string | null
+          valor_compra?: number
+          valor_venda?: number | null
+          vendedor_bairro?: string | null
+          vendedor_cep?: string | null
+          vendedor_cidade?: string | null
+          vendedor_complemento?: string | null
+          vendedor_cpf?: string | null
+          vendedor_endereco?: string | null
+          vendedor_estado?: string | null
+          vendedor_nome?: string
+          vendedor_numero?: string | null
+          vendedor_telefone?: string | null
+          vendedor_whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compras_celulares_cliente_venda_id_fkey"
+            columns: ["cliente_venda_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compras_fotos: {
+        Row: {
+          compra_id: string | null
+          created_at: string | null
+          id: string
+          observacao: string | null
+          url_foto: string
+        }
+        Insert: {
+          compra_id?: string | null
+          created_at?: string | null
+          id?: string
+          observacao?: string | null
+          url_foto: string
+        }
+        Update: {
+          compra_id?: string | null
+          created_at?: string | null
+          id?: string
+          observacao?: string | null
+          url_foto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compras_fotos_compra_id_fkey"
+            columns: ["compra_id"]
+            isOneToOne: false
+            referencedRelation: "compras_celulares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compras_reparos: {
+        Row: {
+          compra_id: string | null
+          created_at: string | null
+          descricao: string
+          id: string
+          status: string | null
+          tecnico_id: string | null
+          valor_estimado: number | null
+          valor_real: number | null
+        }
+        Insert: {
+          compra_id?: string | null
+          created_at?: string | null
+          descricao: string
+          id?: string
+          status?: string | null
+          tecnico_id?: string | null
+          valor_estimado?: number | null
+          valor_real?: number | null
+        }
+        Update: {
+          compra_id?: string | null
+          created_at?: string | null
+          descricao?: string
+          id?: string
+          status?: string | null
+          tecnico_id?: string | null
+          valor_estimado?: number | null
+          valor_real?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compras_reparos_compra_id_fkey"
+            columns: ["compra_id"]
+            isOneToOne: false
+            referencedRelation: "compras_celulares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compras_testes: {
+        Row: {
+          compra_id: string | null
+          created_at: string | null
+          id: string
+          itens_teste: Json
+          updated_at: string | null
+        }
+        Insert: {
+          compra_id?: string | null
+          created_at?: string | null
+          id?: string
+          itens_teste?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          compra_id?: string | null
+          created_at?: string | null
+          id?: string
+          itens_teste?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compras_testes_compra_id_fkey"
+            columns: ["compra_id"]
+            isOneToOne: false
+            referencedRelation: "compras_celulares"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       financeiro: {
         Row: {
@@ -1059,6 +1312,16 @@ export type Database = {
         | "Pronto"
         | "Entregue"
         | "Cancelada"
+      status_compra:
+        | "Comprado"
+        | "Em análise"
+        | "Aguardando reparo"
+        | "Em reparo"
+        | "Pronto para venda"
+        | "Anunciado"
+        | "Vendido"
+        | "Usado para peças"
+        | "Devolvido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1198,6 +1461,17 @@ export const Constants = {
         "Pronto",
         "Entregue",
         "Cancelada",
+      ],
+      status_compra: [
+        "Comprado",
+        "Em análise",
+        "Aguardando reparo",
+        "Em reparo",
+        "Pronto para venda",
+        "Anunciado",
+        "Vendido",
+        "Usado para peças",
+        "Devolvido",
       ],
     },
   },
