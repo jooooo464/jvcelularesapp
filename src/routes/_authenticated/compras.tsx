@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { 
   Plus, 
   Smartphone, 
@@ -46,6 +47,7 @@ export const Route = createFileRoute("/_authenticated/compras")({
 
 function ComprasPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const queryClient = useQueryClient();
   const [selectedCompraId, setSelectedCompraId] = useState<string | null>(null);
   const [selectedCompra, setSelectedCompra] = useState<any>(null);
   const [reparoDialogOpen, setReparoDialogOpen] = useState(false);
