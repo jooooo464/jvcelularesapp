@@ -70,6 +70,23 @@ function ComprasPage() {
     lucroTotal: compras?.reduce((acc, c) => acc + (c.valor_venda ? (Number(c.valor_venda) - Number(c.valor_compra)) : 0), 0) || 0,
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este registro de compra?")) return;
+    
+    try {
+      const { error } = await supabase
+        .from("compras_celulares")
+        .delete()
+        .eq("id", id);
+      
+      if (error) throw error;
+      toast.success("Compra excluída com sucesso.");
+      queryClient.invalidateQueries({ queryKey: ["compras_celulares"] });
+    } catch (error: any) {
+      toast.error("Erro ao excluir: " + error.message);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const variants: Record<string, string> = {
       Comprado: "secondary",
@@ -228,7 +245,10 @@ function ComprasPage() {
                         >
                           <TrendingUp className="size-4" /> Marcar como Vendido
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2 text-destructive">
+                        <DropdownMenuItem 
+                          className="gap-2 text-destructive"
+                          onClick={() => handleDelete(compra.id)}
+                        >
                           <Trash2 className="size-4" /> Excluir
                         </DropdownMenuItem>
                       </DropdownMenuContent>
