@@ -34,19 +34,19 @@ export function CompraReparoDialog({ compraId, open, onOpenChange }: CompraRepar
 
     try {
       const { error: reparoError } = await supabase
-        .from("compras_reparos" as any)
+        .from("compras_reparos")
         .insert({
           compra_id: compraId,
           descricao: formData.descricao,
           valor_estimado: Number(formData.valor_estimado),
           status: "Pendente",
-        } as any);
+        });
 
       if (reparoError) throw reparoError;
 
       const { error: statusError } = await supabase
-        .from("compras_celulares" as any)
-        .update({ status: "Aguardando reparo" } as any)
+        .from("compras_celulares")
+        .update({ status: "Aguardando reparo" })
         .eq("id", compraId);
 
       if (statusError) throw statusError;
