@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { CompraFormDialog } from "@/components/compras/CompraFormDialog";
 
 export const Route = createFileRoute("/_authenticated/compras")({
   component: ComprasPage,
