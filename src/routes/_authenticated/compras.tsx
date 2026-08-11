@@ -36,6 +36,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CompraFormDialog } from "@/components/compras/CompraFormDialog";
+import { CompraReparoDialog } from "@/components/compras/CompraReparoDialog";
 
 export const Route = createFileRoute("/_authenticated/compras")({
   component: ComprasPage,
@@ -43,6 +44,8 @@ export const Route = createFileRoute("/_authenticated/compras")({
 
 function ComprasPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCompraId, setSelectedCompraId] = useState<string | null>(null);
+  const [reparoDialogOpen, setReparoDialogOpen] = useState(false);
 
   const { data: compras, isLoading } = useQuery({
     queryKey: ["compras_celulares"],
@@ -86,9 +89,11 @@ function ComprasPage() {
           <h1 className="text-2xl font-bold tracking-tight">Compra de Celulares</h1>
           <p className="text-muted-foreground">Gerencie a compra e revenda de aparelhos semi-novos.</p>
         </div>
-        <Button className="gap-2">
-          <Plus className="size-4" /> Comprar Celular
-        </Button>
+        <CompraFormDialog>
+          <Button className="gap-2">
+            <Plus className="size-4" /> Comprar Celular
+          </Button>
+        </CompraFormDialog>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -197,7 +202,13 @@ function ComprasPage() {
                         <DropdownMenuItem className="gap-2">
                           <Eye className="size-4" /> Detalhes
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2">
+                        <DropdownMenuItem 
+                          className="gap-2"
+                          onClick={() => {
+                            setSelectedCompraId(compra.id);
+                            setReparoDialogOpen(true);
+                          }}
+                        >
                           <Wrench className="size-4" /> Adicionar Reparo
                         </DropdownMenuItem>
                         <DropdownMenuItem className="gap-2 text-destructive">
@@ -212,6 +223,12 @@ function ComprasPage() {
           </TableBody>
         </Table>
       </div>
+      
+      <CompraReparoDialog 
+        compraId={selectedCompraId || ""} 
+        open={reparoDialogOpen} 
+        onOpenChange={setReparoDialogOpen} 
+      />
     </div>
   );
 }
