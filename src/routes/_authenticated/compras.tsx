@@ -37,6 +37,8 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CompraFormDialog } from "@/components/compras/CompraFormDialog";
 import { CompraReparoDialog } from "@/components/compras/CompraReparoDialog";
+import { CompraVendaDialog } from "@/components/compras/CompraVendaDialog";
+import { TrendingUp as TrendingUpIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/compras")({
   component: ComprasPage,
@@ -45,7 +47,9 @@ export const Route = createFileRoute("/_authenticated/compras")({
 function ComprasPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCompraId, setSelectedCompraId] = useState<string | null>(null);
+  const [selectedCompra, setSelectedCompra] = useState<any>(null);
   const [reparoDialogOpen, setReparoDialogOpen] = useState(false);
+  const [vendaDialogOpen, setVendaDialogOpen] = useState(false);
 
   const { data: compras, isLoading } = useQuery({
     queryKey: ["compras_celulares"],
@@ -60,10 +64,10 @@ function ComprasPage() {
   });
 
   const stats = {
-    totalInvestido: compras?.reduce((acc, c) => acc + Number(c.valor_compra), 0) || 0,
+    totalInvestido: compras?.reduce((acc, c) => acc + (Number(c.valor_compra) || 0), 0) || 0,
     emReparo: compras?.filter(c => c.status === 'Em reparo').length || 0,
     prontosVenda: compras?.filter(c => c.status === 'Pronto para venda').length || 0,
-    lucroEstimado: 0, // Implementar lógica posterior
+    lucroTotal: compras?.reduce((acc, c) => acc + (c.valor_venda ? (Number(c.valor_venda) - Number(c.valor_compra)) : 0), 0) || 0,
   };
 
   const getStatusBadge = (status: string) => {
@@ -132,7 +136,9 @@ function ComprasPage() {
             <TrendingUp className="size-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$ 0,00</div>
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(stats.lucroTotal)}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -211,6 +217,15 @@ function ComprasPage() {
                         >
                           <Wrench className="size-4" /> Adicionar Reparo
                         </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="gap-2 text-green-600"
+                          onClick={() => {
+                            setSelectedCompra(compra);
+                            setVendaDialogOpen(true);
+                          }}
+                        >
+                          <TrendingUp className="size-4" /> Marcar como Vendido
+                        </DropdownMenuItem>
                         <DropdownMenuItem className="gap-2 text-destructive">
                           <Trash2 className="size-4" /> Excluir
                         </DropdownMenuItem>
@@ -228,6 +243,11 @@ function ComprasPage() {
         compraId={selectedCompraId || ""} 
         open={reparoDialogOpen} 
         onOpenChange={setReparoDialogOpen} 
+      />
+      <CompraVendaDialog
+        compra={selectedCompra}
+        open={vendaDialogOpen}
+        onOpenChange={setVendaDialogOpen}
       />
     </div>
   );
