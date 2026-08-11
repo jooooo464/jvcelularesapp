@@ -28,6 +28,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
+import { Route as AuthenticatedComprasIdRouteImport } from './routes/_authenticated/compras.$id'
 import { Route as ApiPublicWhatsappWebhookRouteImport } from './routes/api/public/whatsapp/webhook'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -127,6 +128,11 @@ const AuthenticatedClientesRoute = AuthenticatedClientesRouteImport.update({
   path: '/clientes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedComprasIdRoute = AuthenticatedComprasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedComprasRoute,
+} as any)
 const ApiPublicWhatsappWebhookRoute =
   ApiPublicWhatsappWebhookRouteImport.update({
     id: '/api/public/whatsapp/webhook',
@@ -139,7 +145,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/clientes': typeof AuthenticatedClientesRoute
-  '/compras': typeof AuthenticatedComprasRoute
+  '/compras': typeof AuthenticatedComprasRouteWithChildren
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/whatsapp': typeof AuthenticatedWhatsappRoute
   '/portal/$token': typeof PortalTokenRoute
   '/portal/': typeof PortalIndexRoute
+  '/compras/$id': typeof AuthenticatedComprasIdRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -160,7 +167,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/clientes': typeof AuthenticatedClientesRoute
-  '/compras': typeof AuthenticatedComprasRoute
+  '/compras': typeof AuthenticatedComprasRouteWithChildren
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/whatsapp': typeof AuthenticatedWhatsappRoute
   '/portal/$token': typeof PortalTokenRoute
   '/portal': typeof PortalIndexRoute
+  '/compras/$id': typeof AuthenticatedComprasIdRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesById {
@@ -183,7 +191,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
-  '/_authenticated/compras': typeof AuthenticatedComprasRoute
+  '/_authenticated/compras': typeof AuthenticatedComprasRouteWithChildren
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/_authenticated/whatsapp': typeof AuthenticatedWhatsappRoute
   '/portal/$token': typeof PortalTokenRoute
   '/portal/': typeof PortalIndexRoute
+  '/_authenticated/compras/$id': typeof AuthenticatedComprasIdRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRouteTypes {
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/whatsapp'
     | '/portal/$token'
     | '/portal/'
+    | '/compras/$id'
     | '/api/public/whatsapp/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/whatsapp'
     | '/portal/$token'
     | '/portal'
+    | '/compras/$id'
     | '/api/public/whatsapp/webhook'
   id:
     | '__root__'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/_authenticated/whatsapp'
     | '/portal/$token'
     | '/portal/'
+    | '/_authenticated/compras/$id'
     | '/api/public/whatsapp/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -411,6 +423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/compras/$id': {
+      id: '/_authenticated/compras/$id'
+      path: '/$id'
+      fullPath: '/compras/$id'
+      preLoaderRoute: typeof AuthenticatedComprasIdRouteImport
+      parentRoute: typeof AuthenticatedComprasRoute
+    }
     '/api/public/whatsapp/webhook': {
       id: '/api/public/whatsapp/webhook'
       path: '/api/public/whatsapp/webhook'
@@ -421,9 +440,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedComprasRouteChildren {
+  AuthenticatedComprasIdRoute: typeof AuthenticatedComprasIdRoute
+}
+
+const AuthenticatedComprasRouteChildren: AuthenticatedComprasRouteChildren = {
+  AuthenticatedComprasIdRoute: AuthenticatedComprasIdRoute,
+}
+
+const AuthenticatedComprasRouteWithChildren =
+  AuthenticatedComprasRoute._addFileChildren(AuthenticatedComprasRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
-  AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
+  AuthenticatedComprasRoute: typeof AuthenticatedComprasRouteWithChildren
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEstoqueRoute: typeof AuthenticatedEstoqueRoute
@@ -439,7 +469,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClientesRoute: AuthenticatedClientesRoute,
-  AuthenticatedComprasRoute: AuthenticatedComprasRoute,
+  AuthenticatedComprasRoute: AuthenticatedComprasRouteWithChildren,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEstoqueRoute: AuthenticatedEstoqueRoute,
