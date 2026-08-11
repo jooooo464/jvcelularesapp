@@ -51,11 +51,11 @@ function ComprasPage() {
     queryKey: ["compras_celulares"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("compras_celulares" as any)
+        .from("compras_celulares")
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as any[];
+      return data;
     },
   });
 
