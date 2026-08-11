@@ -205,9 +205,11 @@ function ComprasPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="gap-2">
-                          <Eye className="size-4" /> Detalhes
-                        </DropdownMenuItem>
+                        <Link to={`/compras/${compra.id}`}>
+                          <DropdownMenuItem className="gap-2">
+                            <Eye className="size-4" /> Detalhes
+                          </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuItem 
                           className="gap-2"
                           onClick={() => {
