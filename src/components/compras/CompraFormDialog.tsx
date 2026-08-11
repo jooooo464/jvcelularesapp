@@ -78,7 +78,7 @@ export function CompraFormDialog({ children }: CompraFormProps) {
   const onSubmit = async (values: any) => {
     try {
       const { data: compra, error: compraError } = await supabase
-        .from("compras_celulares" as any)
+        .from("compras_celulares")
         .insert({
           marca: values.marca,
           modelo: values.modelo,
@@ -98,18 +98,18 @@ export function CompraFormDialog({ children }: CompraFormProps) {
           vendedor_endereco: values.vendedor_endereco,
           vendedor_cidade: values.vendedor_cidade,
           vendedor_estado: values.vendedor_estado,
-        } as any)
+        })
         .select()
         .single();
 
       if (compraError) throw compraError;
 
       const { error: testesError } = await supabase
-        .from("compras_testes" as any)
+        .from("compras_testes")
         .insert({
-          compra_id: (compra as any).id,
+          compra_id: compra.id,
           itens_teste: values.testes,
-        } as any);
+        });
 
       if (testesError) throw testesError;
 
