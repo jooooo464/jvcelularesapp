@@ -9,6 +9,7 @@ import {
   Wallet,
   BarChart3,
   Settings,
+  Smartphone,
   MessageCircle,
   Trash2,
   Moon,
