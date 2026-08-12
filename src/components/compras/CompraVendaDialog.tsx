@@ -24,6 +24,8 @@ export function CompraVendaDialog({ compra, open, onOpenChange }: CompraVendaDia
   const queryClient = useQueryClient();
   const [valorVenda, setValorVenda] = useState("");
 
+  if (!compra) return null;
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
