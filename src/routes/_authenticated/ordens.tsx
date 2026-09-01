@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Search, MessageCircle } from "lucide-react";
+import { Plus, Search, MessageCircle, Smartphone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, EmptyState } from "@/components/ui-kit";
 import { Field } from "./clientes";
@@ -29,6 +29,7 @@ import { useIsAdmin } from "@/lib/auth";
 import { OsWhatsappDialog, type OsWhats } from "@/components/OsWhatsappDialog";
 import { useServerFn } from "@tanstack/react-start";
 import { waNotificarStatus } from "@/lib/whatsapp.functions";
+import { DiagnosticSessionDialog } from "@/components/DiagnosticSessionDialog";
 
 
 export const Route = createFileRoute("/_authenticated/ordens")({
@@ -74,6 +75,7 @@ function OrdensPage() {
   const [portalOs, setPortalOs] = useState<OsPortal | null>(null);
   const [shareOs, setShareOs] = useState<OsShare | null>(null);
   const [inspecaoOs, setInspecaoOs] = useState<OsInspecao | null>(null);
+  const [diagnosticOs, setDiagnosticOs] = useState<any>(null);
   const isAdmin = useIsAdmin();
 
   const { data: ordens = [] } = useQuery({
@@ -323,6 +325,9 @@ function OrdensPage() {
 
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="icon" aria-label="Testar celular" onClick={() => setDiagnosticOs(o)}>
+                        <Smartphone className="size-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -516,6 +521,7 @@ function OrdensPage() {
       <OsInspecaoDialog os={inspecaoOs} open={!!inspecaoOs} onOpenChange={(v) => !v && setInspecaoOs(null)} />
       <OsWhatsappDialog os={whatsOs} open={!!whatsOs} onOpenChange={(v) => !v && setWhatsOs(null)} />
       <OsAtualizacoesDialog os={portalOs} open={!!portalOs} onOpenChange={(v) => !v && setPortalOs(null)} />
+      <DiagnosticSessionDialog os={diagnosticOs} open={!!diagnosticOs} onOpenChange={(v) => !v && setDiagnosticOs(null)} />
     </div>
   );
 }
