@@ -224,7 +224,7 @@ function ComprasPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <Link to={`/compras/${compra.id}`}>
+                        <Link to="/compras/$id" params={{ id: compra.id }}>
                           <DropdownMenuItem className="gap-2">
                             <Eye className="size-4" /> Detalhes
                           </DropdownMenuItem>

@@ -192,7 +192,8 @@ function MobileDiagnosticPage() {
   function trackTouch(event: React.PointerEvent<HTMLDivElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
     setTouches((value) => [...value, { x: Math.round(event.clientX - bounds.left), y: Math.round(event.clientY - bounds.top) }].slice(-160));
-    setMaxPointers((value) => Math.max(value, event.currentTarget.getCoalescedEvents?.().length || 1, value));
+    const coalesced = event.nativeEvent.getCoalescedEvents?.().length ?? 1;
+    setMaxPointers((value) => Math.max(value, coalesced));
   }
 
   async function complete() {
