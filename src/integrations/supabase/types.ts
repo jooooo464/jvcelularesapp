@@ -594,6 +594,120 @@ export type Database = {
           },
         ]
       }
+      diagnostic_sessions: {
+        Row: {
+          cliente_id: string | null
+          completed_at: string | null
+          created_at: string
+          device_info: Json
+          expires_at: string
+          id: string
+          os_id: string | null
+          resultado_geral: string | null
+          session_token: string
+          started_at: string | null
+          status: string
+          tecnico_id: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          device_info?: Json
+          expires_at?: string
+          id?: string
+          os_id?: string | null
+          resultado_geral?: string | null
+          session_token?: string
+          started_at?: string | null
+          status?: string
+          tecnico_id?: string | null
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          device_info?: Json
+          expires_at?: string
+          id?: string
+          os_id?: string | null
+          resultado_geral?: string | null
+          session_token?: string
+          started_at?: string | null
+          status?: string
+          tecnico_id?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_sessions_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostic_sessions_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostic_sessions_tecnico_id_fkey"
+            columns: ["tecnico_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostic_tests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          diagnostic_id: string
+          id: string
+          observacao: string | null
+          resultado_tecnico: Json
+          status: string
+          tipo: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          diagnostic_id: string
+          id?: string
+          observacao?: string | null
+          resultado_tecnico?: Json
+          status: string
+          tipo: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          diagnostic_id?: string
+          id?: string
+          observacao?: string | null
+          resultado_tecnico?: Json
+          status?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_tests_diagnostic_id_fkey"
+            columns: ["diagnostic_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostic_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financeiro: {
         Row: {
           categoria: string | null
@@ -1297,7 +1411,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      connect_diagnostic_session: {
+        Args: { p_device_info?: Json; p_token: string }
+        Returns: Json
+      }
+      create_diagnostic_session: {
+        Args: { p_os_id: string; p_tipo?: string }
+        Returns: Json
+      }
+      finish_diagnostic_session: { Args: { p_token: string }; Returns: Json }
+      get_diagnostic_session: {
+        Args: { p_token: string }
+        Returns: {
+          device_info: Json
+          expires_at: string
+          id: string
+          numero_os: number
+          status: string
+          tests: Json
+          tipo: string
+        }[]
+      }
+      save_diagnostic_test: {
+        Args: {
+          p_observacao?: string
+          p_resultado_tecnico?: Json
+          p_status: string
+          p_tipo: string
+          p_token: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "administrador" | "tecnico" | "vendedor" | "financeiro"

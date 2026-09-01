@@ -1,4 +1,3 @@
--- Diagnóstico de aparelhos vinculado a ordens de serviço
 CREATE TABLE public.diagnostic_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   os_id UUID REFERENCES public.ordens_servico(id) ON DELETE SET NULL,
@@ -124,6 +123,12 @@ BEGIN
   RETURN jsonb_build_object('id', v_diagnostic_id, 'resultado_geral', v_result);
 END;
 $$;
+
+REVOKE EXECUTE ON FUNCTION public.create_diagnostic_session(UUID, TEXT) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_diagnostic_session(UUID) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.connect_diagnostic_session(UUID, JSONB) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.save_diagnostic_test(UUID, TEXT, TEXT, TEXT, JSONB) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.finish_diagnostic_session(UUID) FROM PUBLIC;
 
 GRANT EXECUTE ON FUNCTION public.create_diagnostic_session(UUID, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.get_diagnostic_session(UUID) TO anon, authenticated;
