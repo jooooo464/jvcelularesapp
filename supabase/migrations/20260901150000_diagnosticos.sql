@@ -43,13 +43,13 @@ GRANT ALL ON public.diagnostic_sessions, public.diagnostic_tests TO service_role
 
 CREATE POLICY diagnostic_sessions_staff ON public.diagnostic_sessions
 FOR ALL TO authenticated
-USING (public.is_active_user())
-WITH CHECK (public.is_active_user());
+USING (private.is_active_user())
+WITH CHECK (private.is_active_user());
 
 CREATE POLICY diagnostic_tests_staff ON public.diagnostic_tests
 FOR ALL TO authenticated
-USING (public.is_active_user())
-WITH CHECK (public.is_active_user());
+USING (private.is_active_user())
+WITH CHECK (private.is_active_user());
 
 CREATE OR REPLACE FUNCTION public.create_diagnostic_session(p_os_id UUID, p_tipo TEXT DEFAULT 'inicial')
 RETURNS JSONB
@@ -57,7 +57,7 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
 AS $$
 DECLARE v_session public.diagnostic_sessions; v_os public.ordens_servico;
 BEGIN
-  IF NOT public.is_active_user() THEN RAISE EXCEPTION 'Usuário sem acesso'; END IF;
+  IF NOT private.is_active_user() THEN RAISE EXCEPTION 'Usuário sem acesso'; END IF;
   IF p_tipo NOT IN ('inicial', 'final', 'independente') THEN RAISE EXCEPTION 'Tipo de diagnóstico inválido'; END IF;
   SELECT * INTO v_os FROM public.ordens_servico WHERE id = p_os_id AND deleted = false;
   IF NOT FOUND THEN RAISE EXCEPTION 'Ordem de serviço não encontrada'; END IF;
