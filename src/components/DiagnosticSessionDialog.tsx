@@ -51,7 +51,10 @@ export function DiagnosticSessionDialog({ os, open, onOpenChange }: { os: OsDiag
     const { data, error } = await (supabase as any).rpc("create_diagnostic_session", { p_os_id: os.id, p_tipo: type });
     setCreating(false);
     if (error) {
-      toast.error("Não foi possível gerar o QR Code", { description: error.message });
+      const migrationPending = /does not exist|schema cache|relation .* does not exist/i.test(error.message);
+      toast.error(migrationPending ? "O banco ainda precisa receber a migration de diagnósticos." : "Não foi possível gerar o QR Code", {
+        description: migrationPending ? "No Lovable, aplique a migration 20260901150000_diagnosticos.sql no Supabase." : error.message,
+      });
       return;
     }
     setSession(data as Session);
