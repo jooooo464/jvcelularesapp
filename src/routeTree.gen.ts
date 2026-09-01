@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalTokenRouteImport } from './routes/portal.$token'
+import { Route as DiagnosticoTokenRouteImport } from './routes/diagnostico.$token'
 import { Route as AuthenticatedWhatsappRouteImport } from './routes/_authenticated/whatsapp'
 import { Route as AuthenticatedVendasRouteImport } from './routes/_authenticated/vendas'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
@@ -24,6 +25,7 @@ import { Route as AuthenticatedOrdensLixeiraRouteImport } from './routes/_authen
 import { Route as AuthenticatedOrdensRouteImport } from './routes/_authenticated/ordens'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated/financeiro'
 import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticated/estoque'
+import { Route as AuthenticatedDiagnosticosRouteImport } from './routes/_authenticated/diagnosticos'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
@@ -58,6 +60,11 @@ const PortalIndexRoute = PortalIndexRouteImport.update({
 const PortalTokenRoute = PortalTokenRouteImport.update({
   id: '/portal/$token',
   path: '/portal/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticoTokenRoute = DiagnosticoTokenRouteImport.update({
+  id: '/diagnostico/$token',
+  path: '/diagnostico/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWhatsappRoute = AuthenticatedWhatsappRouteImport.update({
@@ -107,6 +114,12 @@ const AuthenticatedEstoqueRoute = AuthenticatedEstoqueRouteImport.update({
   path: '/estoque',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDiagnosticosRoute =
+  AuthenticatedDiagnosticosRouteImport.update({
+    id: '/diagnosticos',
+    path: '/diagnosticos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -148,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/compras': typeof AuthenticatedComprasRouteWithChildren
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/diagnosticos': typeof AuthenticatedDiagnosticosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ordens': typeof AuthenticatedOrdensRoute
@@ -157,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/vendas': typeof AuthenticatedVendasRoute
   '/whatsapp': typeof AuthenticatedWhatsappRoute
+  '/diagnostico/$token': typeof DiagnosticoTokenRoute
   '/portal/$token': typeof PortalTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/compras/$id': typeof AuthenticatedComprasIdRoute
@@ -170,6 +185,7 @@ export interface FileRoutesByTo {
   '/compras': typeof AuthenticatedComprasRouteWithChildren
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/diagnosticos': typeof AuthenticatedDiagnosticosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/ordens': typeof AuthenticatedOrdensRoute
@@ -179,6 +195,7 @@ export interface FileRoutesByTo {
   '/relatorios': typeof AuthenticatedRelatoriosRoute
   '/vendas': typeof AuthenticatedVendasRoute
   '/whatsapp': typeof AuthenticatedWhatsappRoute
+  '/diagnostico/$token': typeof DiagnosticoTokenRoute
   '/portal/$token': typeof PortalTokenRoute
   '/portal': typeof PortalIndexRoute
   '/compras/$id': typeof AuthenticatedComprasIdRoute
@@ -194,6 +211,7 @@ export interface FileRoutesById {
   '/_authenticated/compras': typeof AuthenticatedComprasRouteWithChildren
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/diagnosticos': typeof AuthenticatedDiagnosticosRoute
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/ordens': typeof AuthenticatedOrdensRoute
@@ -203,6 +221,7 @@ export interface FileRoutesById {
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
   '/_authenticated/vendas': typeof AuthenticatedVendasRoute
   '/_authenticated/whatsapp': typeof AuthenticatedWhatsappRoute
+  '/diagnostico/$token': typeof DiagnosticoTokenRoute
   '/portal/$token': typeof PortalTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/_authenticated/compras/$id': typeof AuthenticatedComprasIdRoute
@@ -218,6 +237,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/configuracoes'
     | '/dashboard'
+    | '/diagnosticos'
     | '/estoque'
     | '/financeiro'
     | '/ordens'
@@ -227,6 +247,7 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/vendas'
     | '/whatsapp'
+    | '/diagnostico/$token'
     | '/portal/$token'
     | '/portal/'
     | '/compras/$id'
@@ -240,6 +261,7 @@ export interface FileRouteTypes {
     | '/compras'
     | '/configuracoes'
     | '/dashboard'
+    | '/diagnosticos'
     | '/estoque'
     | '/financeiro'
     | '/ordens'
@@ -249,6 +271,7 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/vendas'
     | '/whatsapp'
+    | '/diagnostico/$token'
     | '/portal/$token'
     | '/portal'
     | '/compras/$id'
@@ -263,6 +286,7 @@ export interface FileRouteTypes {
     | '/_authenticated/compras'
     | '/_authenticated/configuracoes'
     | '/_authenticated/dashboard'
+    | '/_authenticated/diagnosticos'
     | '/_authenticated/estoque'
     | '/_authenticated/financeiro'
     | '/_authenticated/ordens'
@@ -272,6 +296,7 @@ export interface FileRouteTypes {
     | '/_authenticated/relatorios'
     | '/_authenticated/vendas'
     | '/_authenticated/whatsapp'
+    | '/diagnostico/$token'
     | '/portal/$token'
     | '/portal/'
     | '/_authenticated/compras/$id'
@@ -283,6 +308,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  DiagnosticoTokenRoute: typeof DiagnosticoTokenRoute
   PortalTokenRoute: typeof PortalTokenRoute
   PortalIndexRoute: typeof PortalIndexRoute
   ApiPublicWhatsappWebhookRoute: typeof ApiPublicWhatsappWebhookRoute
@@ -330,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/portal/$token'
       fullPath: '/portal/$token'
       preLoaderRoute: typeof PortalTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostico/$token': {
+      id: '/diagnostico/$token'
+      path: '/diagnostico/$token'
+      fullPath: '/diagnostico/$token'
+      preLoaderRoute: typeof DiagnosticoTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/whatsapp': {
@@ -395,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEstoqueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/diagnosticos': {
+      id: '/_authenticated/diagnosticos'
+      path: '/diagnosticos'
+      fullPath: '/diagnosticos'
+      preLoaderRoute: typeof AuthenticatedDiagnosticosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -456,6 +496,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRouteWithChildren
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDiagnosticosRoute: typeof AuthenticatedDiagnosticosRoute
   AuthenticatedEstoqueRoute: typeof AuthenticatedEstoqueRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedOrdensRoute: typeof AuthenticatedOrdensRoute
@@ -472,6 +513,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComprasRoute: AuthenticatedComprasRouteWithChildren,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDiagnosticosRoute: AuthenticatedDiagnosticosRoute,
   AuthenticatedEstoqueRoute: AuthenticatedEstoqueRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedOrdensRoute: AuthenticatedOrdensRoute,
@@ -491,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  DiagnosticoTokenRoute: DiagnosticoTokenRoute,
   PortalTokenRoute: PortalTokenRoute,
   PortalIndexRoute: PortalIndexRoute,
   ApiPublicWhatsappWebhookRoute: ApiPublicWhatsappWebhookRoute,
