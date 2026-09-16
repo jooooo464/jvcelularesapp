@@ -108,16 +108,31 @@ function AuthPage() {
 
   async function onSignup(values: z.infer<typeof signupSchema>) {
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
       options: { emailRedirectTo: window.location.origin, data: { nome: values.nome } },
     });
-    setBusy(false);
-    if (error)
+    if (error) {
+      setBusy(false);
       return toast.error("Não foi possível criar a conta", {
         description: friendlyAuthError(error),
       });
+    }
+    // Se a conta foi criada sem sessão ativa, entra automaticamente.
+    if (!data.session) {
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+      if (loginError) {
+        setBusy(false);
+        return toast.error("Conta criada, mas não foi possível entrar", {
+          description: friendlyAuthError(loginError),
+        });
+      }
+    }
+    setBusy(false);
     toast.success("Conta criada", { description: "Você já pode acessar o sistema." });
     navigate({ to: "/dashboard", replace: true });
   }
