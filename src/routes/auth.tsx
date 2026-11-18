@@ -55,6 +55,7 @@ const loginSchema = z.object({
 
 const signupSchema = loginSchema.extend({
   nome: z.string().trim().min(2, "Informe seu nome").max(100),
+  nome_loja: z.string().trim().min(2, "Informe o nome da loja").max(100),
 });
 
 function AuthPage() {
@@ -94,7 +95,7 @@ function AuthPage() {
   });
   const signup = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { nome: "", email: "", password: "" },
+    defaultValues: { nome: "", nome_loja: "", email: "", password: "" },
   });
 
   async function onLogin(values: z.infer<typeof loginSchema>) {
@@ -111,7 +112,7 @@ function AuthPage() {
     const { data, error } = await supabase.auth.signUp({
       email: values.email,
       password: values.password,
-      options: { emailRedirectTo: window.location.origin, data: { nome: values.nome } },
+      options: { emailRedirectTo: window.location.origin, data: { nome: values.nome, nome_loja: values.nome_loja } },
     });
     if (error) {
       setBusy(false);
