@@ -218,6 +218,11 @@ function AuthPage() {
                   <FieldError msg={signup.formState.errors.nome?.message} />
                 </div>
                 <div className="space-y-1.5">
+                  <Label htmlFor="nome_loja">Nome da loja</Label>
+                  <Input id="nome_loja" placeholder="Ex.: JV Celulares" {...signup.register("nome_loja")} />
+                  <FieldError msg={signup.formState.errors.nome_loja?.message} />
+                </div>
+                <div className="space-y-1.5">
                   <Label htmlFor="signup-email">E-mail</Label>
                   <Input id="signup-email" type="email" {...signup.register("email")} />
                   <FieldError msg={signup.formState.errors.email?.message} />
